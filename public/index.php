@@ -49,7 +49,7 @@ if (isset($_GET['remove'])) {
                 <div class="right-links d-flex">
                     <a href="#" class="me-3">Help & FAQs</a>
                     <a href="#" class="me-3">My Account</a>
-                    <a href="#" class="me-3">sign in</a>
+                    <a href="login.php" class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -355,6 +355,7 @@ if (isset($_GET['remove'])) {
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 
 
 
