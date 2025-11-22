@@ -1,22 +1,45 @@
 <html>
 
 <?php
-include('C:\xampp\htdocs\ModaX\includes\db.php');
+include('C:\xamppp\htdocs\Testing_Mouda\db.php');
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-    
-    $query = "SELECT * FROM users WHERE email='$email' AND password_hash='$password'";
-    $result = mysqli_query($connect, $query);
-    
-    if (mysqli_num_rows($result) >= 1) {
-        
-        session_start();
-        $_SESSION['user'] = $email;
-        header("Location: index.php"); 
+
+    $email = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        header("Location: login.php?error=email_not_found");
         exit();
+    }
+
+    $password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
+
+    $stmt = $connect->prepare("SELECT password_hash FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 1) {
+
+        $row = $result->fetch_assoc();
+        $hashedPassword = $row["password_hash"];
+
+        if (password_verify($password, $hashedPassword)) {
+
+            session_start();
+            $_SESSION['user'] = $email;
+
+            header("Location: index.php");
+            exit();
+
+        } else {
+            header("Location: login.php?error=wrong_password");
+            exit();
+        }
+
     } else {
-        header("Location:login.php");
+        header("Location: login.php?error=email_not_found");
         exit();
     }
 }
@@ -309,12 +332,34 @@ button {
                 <?php endif; ?>
                 
                 <div class="form-wrapper">
-                    <input type="email" name="email" placeholder="Email" required class="form-control">
+                    <input type="email" name="email" placeholder="Email" required class="form-control"
+                    <?php
+                    if(isset($_GET["error"]) && $_GET["error"]=="email_not_found")
+                    {
+                      echo "style=border-bottom-color:'red'> ";
+                      echo "<span style='color:red'>Invalid Email</span>";
+                    }
+                    else {
+                      echo ">";
+                    }
+                    
+                    ?>
                     <i class="zmdi zmdi-email"></i>
                 </div>
 
                 <div class="form-wrapper">
-                    <input type="password" placeholder="Password" class="form-control" name="password" required>
+                    <input type="password" placeholder="Password" class="form-control" name="password" required
+                                        <?php
+                    if(isset($_GET["error"]) && $_GET["error"]=="wrong_password")
+                    {
+                      echo "style=border-bottom-color:'red'> ";
+                      echo "<span style='color:red'>Invalid Password</span>";
+                    }
+                    else {
+                      echo ">";
+                    }
+                    
+                    ?>
                     <i class="zmdi zmdi-lock"></i>
                 </div>
                 
