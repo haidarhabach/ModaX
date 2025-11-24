@@ -1,29 +1,77 @@
 <html>
 
 <?php
-include('C:\xampp\htdocs\ModaX\includes\db.php');
+session_start();
+$error = $_SESSION['errors'] ?? [];
+// ha l unset lmytkrr
+unset($_SESSION['errors']);
+
+include('C:\xamppp\htdocs\Testing_Mouda\db.php');
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $reslt = mysqli_query($connect, "select id from users");
+    $stmt = $connect->prepare("select id from users");
+    $stmt->execute();
+    $result=$stmt->get_result();
     $id = mt_rand(1, 10000000);
-    while ($row = mysqli_fetch_assoc($reslt)) {
+    while ($row = $result->fetch_assoc()) {
         if ($row["id"] != $id) {
             break;
         } else {
             $id = mt_rand(1, 10000000);
         }
     }
-
+    $error=[];
     $name = $_POST["name"];
     $pass = $_POST["password"];
     $email = $_POST["email"];
     $phone = $_POST["phone"];
-    $query = "INSERT INTO users values($id,'$name','$email','$pass','$phone',now())";
-    $valid = mysqli_query($connect, $query);
-    if ($valid) {
-        header("Location:login.php");
-    } else {
-        header("Location:register.php");
+    $confirm=$_POST["Cpassword"];
+    if(!filter_var($name,FILTER_SANITIZE_STRING) || empty($name))
+    {
+        $error["invalid_name"]=1;
     }
+    if(filter_var($pass,FILTER_SANITIZE_STRING)  || empty($pass))
+    {
+            if(!preg_match("/^[A-Za-z]{3,}.*\d.*$/", $pass))
+    {
+            $error["password_match_error"]=1;
+    }
+    if($confirm != $pass)
+    {
+            $error["confirm_password"]=1;
+    }
+    }
+    else {
+        $error["invalid_password"]=1;
+    }
+    if(filter_var($email,FILTER_VALIDATE_EMAIL))
+    {
+        $email_stmt= $connect->prepare("SELECT email from users where email=?");
+        $email_stmt->bind_param("s", $email);
+        $email_stmt->execute();
+        $exist=$email_stmt->get_result();
+        if($exist->num_rows > 0) {
+        $error["exist_email"]=1;
+            }
+    }else {
+        $error["invalid_email"];
+    }
+    if(!preg_match("/^\d{6,}$/",$phone))
+    {
+        $error["invalid_phone"]=1;
+    }
+        if(!empty($error))
+        {
+            $_SESSION["errors"]=$error;
+            header("Location:register.php");
+            exit();
+        }
+
+        $query = "INSERT INTO users VALUES ($id, ?, ?, ?, ?, now())";
+        $stmt = $connect->prepare($query);
+        $pass1=password_hash($pass,PASSWORD_DEFAULT);
+        $stmt->bind_param("ssss", $name, $email, $pass1, $phone);
+        $stmt->execute();
+        header("Location:login.php");
 }
 
 
@@ -299,24 +347,73 @@ button {
             <form action="#" method="post">
                 <h3>Registration Form</h3>
                 <div class="form-wrapper">
-                    <input type="text" name="name" placeholder="Name" required class="form-control">
+                    <!-- name backend -->
+                    <input type="text" name="name" placeholder="Name" required class="form-control"
+                    <?php if(isset($error["invalid_name"])){ echo "style='border-bottom-color:red;'";}?>  >
+                    <?php
+                    if(isset($error["invalid_name"]))
+                    {
+                        echo "<span style='color:red;'>invalid name. please enter valid one</span>";
+                    }
+                        ?>
                     <i class="zmdi zmdi-account"></i>
                 </div>
+                <!-- to phone backend -->
                 <div class="form-wrapper">
-                    <input type="tel" name="phone" placeholder="phone number" required class="form-control">
+                    <input type="tel" name="phone" placeholder="phone number" required class="form-control"
+                    <?php if(isset($error["invalid_phone"])){ echo "style='border-bottom-color:red;'";}?> >
+                    <?php
+                    if(isset($error["invalid_phone"]))
+                    {
+                        echo "<span style='color:red;'>invalid number. please enter valid one</span>";
+                    }
+                    ?>
                     <i class="zmdi zmdi-account"></i>
                 </div>
+                <!-- email backend -->
                 <div class="form-wrapper">
-                    <input type="email" name="email" placeholder="email" required class="form-control">
+                    <input type="email" name="email" placeholder="email" required class="form-control"
+                    <?php if(isset($error["invalid_email"]) || isset($error["exist_email"])){ echo "style='border-bottom-color:red;'";}?> >
+                    <?php
+                    if(isset($error["invalid_email"]))
+                    {
+                        echo "<span style='color:red;'>invalid Email. please enter valid one</span>";
+                    }
+                    elseif(isset($error["exist_email"]))
+                    {
+                        echo "<span style='color:red;'>Exist Email. please enter new one</span>";
+                    }
+                    ?>
                     <i class="zmdi zmdi-email"></i>
                 </div>
-
+                    <!-- password backend -->
                 <div class="form-wrapper">
-                    <input type="password" placeholder="Password" class="form-control" name="password" required>
+                    <input type="password" placeholder="Password" class="form-control" name="password" required
+                    <?php if(isset($error["invalid_password"]) || isset($error["password_match_error"])){ echo "style='border-bottom-color:red;'";}?> >
+                    <?php
+                    if(isset($error["invalid_password"]))
+                    {
+                        echo "<span style='color:red;'>invalid password. please enter valid one</span>";
+                    }
+                    elseif(isset($error["password_match_error"])) 
+                    {
+                        echo "<span style='color:red;'>invalid metts. the password need at least first 3 character and a 1 number</span>";
+                    }
+                    ?>
                     <i class="zmdi zmdi-lock"></i>
                 </div>
+                <!-- confirm error -->
                 <div class="form-wrapper">
-                    <input type="password" placeholder="Confirm Password" class="form-control" name="password" required>
+                    <input type="password" placeholder="Confirm Password" class="form-control" name="Cpassword" required
+                    <?php if(isset($error["confirm_password"])){ echo "style='border-bottom-color:red;'";}?> >
+                    <?php
+                    if(isset($error["confirm_password"]))
+                    {
+                        echo "<span style='color:red;'>invalid.not the same password !</span>";
+                    }
+                    
+                    
+                    ?>
                     <i class="zmdi zmdi-lock"></i>
                 </div>
                 <button type="submit">Register <i class="zmdi zmdi-arrow-right"></i></button>
