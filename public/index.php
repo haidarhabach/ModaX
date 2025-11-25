@@ -2,12 +2,13 @@
 <html>
 <?php
 session_start();
+include '../includes/db.php';
 // $_SESSION['cart'][] = [
 //   'id' => 1,
 //   'name' => 'White Shirt Pleat',
 //   'price' => 19.00,
 //   'qty' => 1,
-//   'image' => 'images/item-cart-01.jpg'
+//   'image' => 'assets/images/item-cart-01.jpg'
 //  ];
 
 if (isset($_GET['remove'])) {
@@ -28,7 +29,7 @@ if (isset($_GET['remove'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
@@ -56,7 +57,8 @@ if (isset($_GET['remove'])) {
     </div>
 
     <!--Main navigation-->
-    <nav class="navbar navbar-expand-lg sticky-top navbar-light" style="background-color: transparent !important; box-shadow: none !important;">
+    <nav class="navbar navbar-expand-lg sticky-top navbar-light"
+        style="background-color: transparent !important; box-shadow: none !important;">
 
         <div class="container">
             <span class="logo md-0"><b>Moda</b>X</span>
@@ -69,7 +71,8 @@ if (isset($_GET['remove'])) {
 
             <!--Navigation menu-->
             <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
                             Home
@@ -208,7 +211,7 @@ if (isset($_GET['remove'])) {
     <!--Hero Section-->
 
     <section class="hero-slider">
-        
+
         <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
             <!-- Indicators -->
             <div class="carousel-indicators">
@@ -311,6 +314,72 @@ if (isset($_GET['remove'])) {
         </div>
     </section>
 
+    <!-- banner section-->
+    <section class="banner-section py-5">
+        <div class="container">
+            <div class="row g-4">
+
+                <!-- banner 1 :women-->
+                <div class="col-md-6 col-xl-4">
+                    <div class="banner-card position-relative overflow-hidden rounded shadow-sm">
+                        <img src="assets/images/banner-01.jpg" class="img-fluid w-100" alt="Women's Collection">
+                        <a href="products.php?category=women"
+                            class="banner-overlay position absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-4 text-decoration-none">
+                            <div class="banner-content">
+                                <h3 class="banner-title fw-bold mb-2">Women</h3>
+                                <p class="banner-subtitle mb-0">Spring 2025</p>
+                            </div>
+                            <div class="banner-action">
+                                <span class="banner-link fw-semibold">Shop Now</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+
+
+                <!-- banner 2 :men-->
+                <div class="col-md-6 col-xl-4">
+                    <div class="banner-card position-relative overflow-hidden rounded">
+                        <img src="assets/images/banner-02.jpg" class="img-fluid w-100" alt="Women's Collection">
+                        <a href="products.php?category=men"
+                            class="banner-overlay position absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-4 text-decoration-none ">
+                            <div class="banner-content">
+                                <h3 class="banner-title fw-bold mb-2">men</h3>
+                                <p class="banner-subtitle mb-0">Spring 2025</p>
+                            </div>
+                            <div class="banner-action">
+                                <span class="banner-link fw-semibold">Shop Now</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- banner 3 :accessories-->
+                <div class="col-md-6 col-xl-4">
+                    <div class="banner-card position-relative overflow-hidden rounded">
+                        <img src="assets/images/banner-03.jpg" class="img-fluid w-100" alt="Women's Collection">
+                        <a href="products.php?category=accessories"
+                            class="banner-overlay position absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-between p-4 text-decoration-none ">
+                            <div class="banner-content">
+                                <h3 class="banner-title fw-bold mb-2">Accessories</h3>
+                                <p class="banner-subtitle mb-0">New Trend</p>
+                            </div>
+                            <div class="banner-action">
+                                <span class="banner-link fw-semibold">Shop Now</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- products section-->
+
+
+
+
 
 
     <script>
@@ -346,7 +415,7 @@ if (isset($_GET['remove'])) {
             });
         });
 
-        
+
     </script>
 
 
@@ -355,7 +424,6 @@ if (isset($_GET['remove'])) {
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 
 
 
