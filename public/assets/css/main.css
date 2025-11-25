@@ -386,3 +386,82 @@
         font-size: 2rem;
     }
 }
+
+.banner-section {
+    background-color: #ffffff;
+}
+
+/* --- Card effects --- */
+.banner-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s;
+    border: 1px solid #e9ecef;
+    background-color: #ffffff;
+}
+
+.banner-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    background-color: #000000; /* Slight grey highlight */
+}
+
+/* --- Overlay --- */
+.banner-overlay {
+    opacity: 1; /* Always visible but subtle */
+    background: rgba(255, 255, 255, 0.65);
+    transition: all 0.3s ease;
+}
+
+/* Keep overlay slightly stronger on hover */
+.banner-card:hover .banner-overlay {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* --- Text styling --- */
+.banner-title,
+.banner-subtitle {
+    color: #212529 !important;  
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.banner-card:hover .banner-title,
+.banner-card:hover .banner-subtitle {
+    transform: translateY(0);
+}
+
+.banner-link {
+    font-size: 1rem;
+    padding-bottom: 4px;
+    color: #212529 !important;
+    border-bottom: 2px solid transparent;  
+    
+    transform: translateY(20px);
+    transition: all 0.3s ease 0.2s;
+    display: inline-block;
+
+    opacity: 0;   
+}
+
+.banner-card:hover .banner-link {
+    opacity: 1;
+    border-bottom: 2px solid #212529; 
+    transform: translateY(0);
+}
+
+.banner-link:hover {
+    border-bottom-color: #000;
+    text-decoration: none;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .banner-title { font-size: 1.5rem; }
+    .banner-subtitle { font-size: 1rem; }
+    .banner-overlay { padding: 2rem 1.5rem !important; }
+}
+
+@media (max-width: 576px) {
+    .banner-title { font-size: 1.25rem; }
+    .banner-overlay { padding: 1.5rem 1rem !important; }
+    .banner-link { font-size: 0.9rem; }
+}
