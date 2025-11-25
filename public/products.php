@@ -20,6 +20,7 @@
 </head>
 
 <body>
+    //rja3 8ayron eza bdk 3melta 3ashen a3ml test bs tzakaret 2eno ma 3ana data b3d
     <?php while ($row = $products->fetch_assoc()): ?>
         <div class="product-card">
             <h4><?= htmlspecialchars($row['name']) ?></h4>
@@ -31,3 +32,4 @@
 </body>
 
 </html>
+
