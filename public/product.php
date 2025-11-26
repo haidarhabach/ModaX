@@ -1,6 +1,6 @@
 <?php
 include 'db.php';
-//demo backend 
+//demo backend hone l id jey mn lsearch aw lhome page  whtrje3 1 row 
 $id = $_GET['id'];
 $stmt = $connect->prepare("SELECT * FROM products WHERE id=?");
 $stmt->bind_param("i", $id);
@@ -28,3 +28,4 @@ $product = $stmt->get_result()->fetch_assoc();
         <button type="submit">Notify me</button>
     </form>
 <?php endif; ?>
+
