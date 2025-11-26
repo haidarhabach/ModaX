@@ -35,6 +35,116 @@ if (isset($_GET['remove'])) {
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        /* Custom styles for improved design */
+        .category-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-nav .nav-link {
+            font-weight: 600;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .category-nav .nav-link.active,
+        .category-nav .nav-link:hover {
+            color: #0d6efd;
+            border-bottom-color: #0d6efd;
+        }
+
+        .filter-box,
+        .search-box {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: none;
+            overflow: hidden;
+        }
+
+        .filter-header,
+        .search-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-body,
+        .search-body {
+            padding: 1.5rem;
+        }
+
+        .filter-actions {
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            background-color: #f8f9fa;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-select,
+        .form-control {
+            border-radius: 6px;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid #ced4da;
+            transition: all 0.2s ease;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        .btn-filter {
+            padding: 0.625rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        .search-btn {
+            padding: 0.625rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+
+        .filter-toggle {
+            display: flex;
+            gap: 0.75rem;
+            margin-left: auto;
+        }
+
+        /* Active state for toggle buttons */
+        .btn-toggle.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        @media (max-width: 768px) {
+            .category-nav {
+                gap: 1rem;
+            }
+
+            .filter-toggle {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
 </head>
 
 
@@ -319,9 +429,6 @@ if (isset($_GET['remove'])) {
         <div class="container">
             <div class="row g-4">
 
-
-                <!-- TODO neb3at l id ma3 l click ba3den lezm n3mla   -->
-                
                 <!-- banner 1 :women-->
                 <div class="col-md-6 col-xl-4">
                     <div class="banner-card position-relative overflow-hidden rounded shadow-sm">
@@ -380,10 +487,158 @@ if (isset($_GET['remove'])) {
 
     <!-- products section-->
 
+    <section class="container my-5">
+        <!--Category navigation-->
+        <div class="section-header mb-4">
+            <h2 class="section-title"> Product Overview </h2>
+        </div>
+        <div class="category-nav">
+            <a href="index.php" class="nav-link <?= empty($_GET['category']) ? 'active' : '' ?>">All Products</a>
+            <a href="index.php?category=women"
+                class="nav-link <?= ($_GET['category'] ?? '') === 'women' ? 'active' : '' ?>">Women</a>
+            <a href="index.php?category=men"
+                class="nav-link <?= ($_GET['category'] ?? '') === 'men' ? 'active' : '' ?>">Men</a>
+            <a href="index.php?category=bag"
+                class="nav-link <?= ($_GET['category'] ?? '') === 'bag' ? 'active' : '' ?>">Bag</a>
+            <a href="index.php?category=shoes"
+                class="nav-link <?= ($_GET['category'] ?? '') === 'shoes' ? 'active' : '' ?>">Shoes</a>
+            <a href="index.php?category=watches"
+                class="nav-link <?= ($_GET['category'] ?? '') === 'watches' ? 'active' : '' ?>">Watches</a>
 
+            <div class="filter-toggle">
+                <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
+                    data-bs-target="#filterBox" aria-expanded="false" aria-controls="filterBox">
+                    <i class="fas fa-filter me-1"></i> Filters
+                </button>
+                <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
+                    data-bs-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
+                    <i class="fas fa-search me-1"></i> Search
+                </button>
+            </div>
+        </div>
 
+        <!-- Filter and Search Boxes Container -->
+        <div class="accordion" id="filterSearchAccordion">
+            <!-- FILTER BOX -->
+            <div class="collapse" id="filterBox" data-bs-parent="#filterSearchAccordion">
+                <div class="filter-box">
+                    <div class="filter-header">
+                        <i class="fas fa-filter me-2"></i> Filter Products
+                    </div>
 
+                    <form method="GET" class="filter-body">
+                        <?php if (!empty($_GET['category'])): ?>
+                            <input type="hidden" name="category" value="<?= $_GET['category'] ?>">
+                        <?php endif; ?>
 
+                        <div class="row g-4">
+                            <!-- SORT -->
+                            <div class="col-md-3">
+                                <label class="form-label">Sort By</label>
+                                <select name="sort" class="form-select">
+                                    <option value="">Default</option>
+                                    <option value="price_asc" <?= ($_GET['sort'] ?? '') === 'price_asc' ? 'selected' : '' ?>>Price Low → High</option>
+                                    <option value="price_desc" <?= ($_GET['sort'] ?? '') === 'price_desc' ? 'selected' : '' ?>>Price High → Low</option>
+                                    <option value="newness" <?= ($_GET['sort'] ?? '') === 'Newness' ? 'selected' : '' ?>>
+                                        Newness</option>
+                                    <option value="popularity" <?= ($_GET['sort'] ?? '') === 'popularity' ? 'selected' : '' ?>>Popularity</option>
+                                </select>
+                            </div>
+
+                            <!-- PRICE -->
+                            <div class="col-md-3">
+                                <label class="form-label">Price Range</label>
+                                <select name="price" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="0-50" <?= ($_GET['price'] ?? '') === '0-50' ? 'selected' : '' ?>>
+                                        $0.00 - $50.00</option>
+                                    <option value="50-100" <?= ($_GET['price'] ?? '') === '50-100' ? 'selected' : '' ?>>
+                                        $50.00 - $100.00</option>
+                                    <option value="100-150" <?= ($_GET['price'] ?? '') === '100-150' ? 'selected' : '' ?>>
+                                        $100.00 - $150.00</option>
+                                    <option value="150-200" <?= ($_GET['price'] ?? '') === '150-200' ? 'selected' : '' ?>>
+                                        $150.00 - $200.00</option>
+                                    <option value="200" <?= ($_GET['price'] ?? '') === '200' ? 'selected' : '' ?>>
+                                        $200.00+</option>
+                                </select>
+                            </div>
+
+                            <!-- COLOR -->
+                            <div class="col-md-2">
+                                <label class="form-label">Color</label>
+                                <select name="color" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="black" <?= ($_GET['color'] ?? '') === 'black' ? 'selected' : '' ?>>
+                                        Black</option>
+                                    <option value="white" <?= ($_GET['color'] ?? '') === 'white' ? 'selected' : '' ?>>
+                                        White</option>
+                                    <option value="red" <?= ($_GET['color'] ?? '') === 'red' ? 'selected' : '' ?>>Red
+                                    </option>
+                                    <option value="blue" <?= ($_GET['color'] ?? '') === 'blue' ? 'selected' : '' ?>>
+                                        Blue</option>
+                                    <option value="green" <?= ($_GET['color'] ?? '') === 'green' ? 'selected' : '' ?>>
+                                        Green</option>
+                                    <option value="grey" <?= ($_GET['color'] ?? '') === 'grey' ? 'selected' : '' ?>>
+                                        Grey</option>
+                                </select>
+                            </div>
+
+                            <!-- TAGS -->
+                            <div class="col-md-3">
+                                <label class="form-label">Tag</label>
+                                <select name="tag" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="fashion" <?= ($_GET['tag'] ?? '') === 'fashion' ? 'selected' : '' ?>>
+                                        Fashion</option>
+                                    <option value="lifestyle" <?= ($_GET['tag'] ?? '') === 'lifestyle' ? 'selected' : '' ?>>Lifestyle</option>
+                                    <option value="denim" <?= ($_GET['tag'] ?? '') === 'denim' ? 'selected' : '' ?>>
+                                        Denim</option>
+                                    <option value="streetstyle" <?= ($_GET['tag'] ?? '') === 'streetstyle' ? 'selected' : '' ?>>Streetstyle</option>
+                                    <option value="crafts" <?= ($_GET['tag'] ?? '') === 'crafts' ? 'selected' : '' ?>>
+                                        Crafts</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn btn-primary btn-filter">
+                                <i class="fas fa-check me-1"></i> Apply Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SEARCH BOX -->
+            <div class="collapse" id="searchBox" data-bs-parent="#filterSearchAccordion">
+                <div class="search-box">
+                    <div class="search-header">
+                        <i class="fas fa-search me-2"></i> Search Products
+                    </div>
+
+                    <form method="GET" class="search-body">
+                        <?php if (!empty($_GET['category'])): ?>
+                            <input type="hidden" name="category" value="<?= $_GET['category'] ?>">
+                        <?php endif; ?>
+
+                        <div class="row align-items-end">
+                            <div class="col-md-9">
+                                <label class="form-label">Search products</label>
+                                <input type="text" name="search" class="form-control"
+                                    placeholder="Enter product name, description, or keyword..."
+                                    value="<?= $_GET['search'] ?? '' ?>">
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-dark search-btn w-100">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <script>
         // Update the cart icon in the navigation header
@@ -394,6 +649,50 @@ if (isset($_GET['remove'])) {
                 cartIcon.setAttribute('data-bs-target', '#cartSidebar');
                 cartIcon.setAttribute('href', '#');
             }
+
+            // Add active state to toggle buttons
+            const filterButtons = document.querySelectorAll('.btn-toggle');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+
+            // Handle when a collapse is shown
+            const filterBox = document.getElementById('filterBox');
+            const searchBox = document.getElementById('searchBox');
+            const filterBtn = document.querySelector('[data-bs-target="#filterBox"]');
+            const searchBtn = document.querySelector('[data-bs-target="#searchBox"]');
+
+            filterBox.addEventListener('show.bs.collapse', function () {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                filterBtn.classList.add('active');
+            });
+
+            searchBox.addEventListener('show.bs.collapse', function () {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                searchBtn.classList.add('active');
+            });
+
+            // Handle when both are closed
+            filterBox.addEventListener('hidden.bs.collapse', function () {
+                if (!searchBox.classList.contains('show')) {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                }
+            });
+
+            searchBox.addEventListener('hidden.bs.collapse', function () {
+                if (!filterBox.classList.contains('show')) {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                }
+            });
         });
 
         // Initialize carousel with custom settings
@@ -417,18 +716,10 @@ if (isset($_GET['remove'])) {
                 });
             });
         });
-
-
     </script>
-
-
-
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
-
-
 </html>
-
