@@ -319,6 +319,9 @@ if (isset($_GET['remove'])) {
         <div class="container">
             <div class="row g-4">
 
+
+                <!-- TODO neb3at l id ma3 l click ba3den lezm n3mla   -->
+                
                 <!-- banner 1 :women-->
                 <div class="col-md-6 col-xl-4">
                     <div class="banner-card position-relative overflow-hidden rounded shadow-sm">
@@ -428,3 +431,4 @@ if (isset($_GET['remove'])) {
 
 
 </html>
+
