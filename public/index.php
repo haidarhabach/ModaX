@@ -144,6 +144,267 @@ if (isset($_GET['remove'])) {
                 justify-content: flex-end;
             }
         }
+
+        .product-grid {
+            padding: 50px 0;
+        }
+
+        .product-item {
+            margin-bottom: 30px;
+        }
+
+        .product-card {
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .quick-view-btn {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            transition: bottom 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .product-card:hover .quick-view-btn {
+            bottom: 0;
+        }
+
+        .product-info {
+            padding: 15px 0;
+        }
+
+        .product-name {
+            font-size: 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            margin-bottom: 5px;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .product-name:hover {
+            color: var(--primary-color);
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .wishlist-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 18px;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .wishlist-btn:hover {
+            color: #ff4d4d;
+        }
+
+        .wishlist-btn.active {
+            color: #ff4d4d;
+        }
+
+        .load-more-btn {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .load-more-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(113, 127, 224, 0.3);
+        }
+
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--text-light);
+            padding: 75px 0 32px;
+        }
+
+        .footer h4 {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer ul li {
+            padding-bottom: 10px;
+        }
+
+        .footer a {
+            color: #999;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #0d6efd;
+        }
+
+        .footer p {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            font-size: 18px;
+            margin-right: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-3px);
+        }
+
+        .newsletter-form .form-control {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #999;
+            border-radius: 0;
+            color: #999;
+            padding: 8px 0;
+            margin-bottom: 20px;
+        }
+
+        .newsletter-form .form-control:focus {
+            box-shadow: none;
+            border-bottom-color: #999;
+        }
+
+        .newsletter-form .form-control::placeholder {
+            color: var(--text-lighter);
+        }
+
+        .subscribe-btn {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 2px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .subscribe-btn:hover {
+            background-color: white;
+            color: #0d6efd;
+            transform: translateY(-2px);
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .payment-methods a {
+            margin: 0 8px;
+            display: inline-block;
+        }
+
+        .payment-icon {
+            width: 50px;
+            height: 30px;
+            background-color: #333;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background-color: white;
+            color: #0d6efd;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 50px 0 20px;
+            }
+
+            .footer .col-sm-6 {
+                margin-bottom: 30px;
+            }
+        }
     </style>
 </head>
 
@@ -189,7 +450,7 @@ if (isset($_GET['remove'])) {
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="product.php">Shop</a>
+                        <a class="nav-link" href="products.php">Shop</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="blog.php">Blog</a>
@@ -640,6 +901,351 @@ if (isset($_GET['remove'])) {
         </div>
     </section>
 
+    <section class="product-grid">
+        <div class="container">
+
+
+            <!-- Product Grid -->
+            <div class="row" id="product-grid">
+                <!-- Product 1 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-01.jpg" alt="Esprit Ruffle Shirt">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Esprit Ruffle Shirt</a>
+                                <div class="product-price">$16.64</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-02.jpg" alt="Herschel supply">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Herschel supply</a>
+                                <div class="product-price">$35.31</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-03.jpg" alt="Only Check Trouser">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Only Check Trouser</a>
+                                <div class="product-price">$25.50</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-04.jpg" alt="Classic Trench Coat">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Classic Trench Coat</a>
+                                <div class="product-price">$75.00</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-05.jpg" alt="Front Pocket Jumper">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Front Pocket Jumper</a>
+                                <div class="product-price">$34.75</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item watches">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-06.jpg" alt="Vintage Inspired Classic">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Vintage Inspired Classic</a>
+                                <div class="product-price">$93.20</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 7 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-07.jpg" alt="Shirt in Stretch Cotton">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Shirt in Stretch Cotton</a>
+                                <div class="product-price">$52.66</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 8 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-08.jpg" alt="Pieces Metallic Printed">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Pieces Metallic Printed</a>
+                                <div class="product-price">$18.96</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 9 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item shoes">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-09.jpg" alt="Converse All Star Hi Plimsolls">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Converse All Star Hi Plimsolls</a>
+                                <div class="product-price">$75.00</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 10 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-10.jpg" alt="Femme T-Shirt In Stripe">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Femme T-Shirt In Stripe</a>
+                                <div class="product-price">$25.85</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 11 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-11.jpg" alt="Herschel supply">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Herschel supply</a>
+                                <div class="product-price">$63.16</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 12 -->
+                <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="assets/images/product-12.jpg" alt="Herschel supply">
+                            <a href="#" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info d-flex justify-content-between align-items-start">
+                            <div>
+                                <a href="#" class="product-name">Herschel supply</a>
+                                <div class="product-price">$63.15</div>
+                            </div>
+                            <button class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-5">
+                <a class="load-more-btn" href="products.php">Load More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li>
+                            <a href="#">Women</a>
+                        </li>
+                        <li>
+                            <a href="#">Men</a>
+                        </li>
+                        <li>
+                            <a href="#">Shoes</a>
+                        </li>
+                        <li>
+                            <a href="#">Watches</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <h4>Help</h4>
+                    <ul>
+                        <li>
+                            <a href="#">Track Order</a>
+                        </li>
+                        <li>
+                            <a href="#">Returns</a>
+                        </li>
+                        <li>
+                            <a href="#">Shipping</a>
+                        </li>
+                        <li>
+                            <a href="#">FAQs</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <h4>GET IN TOUCH</h4>
+                    <p>
+                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
+                        on (+1) 96 716 6879
+                    </p>
+                    <div class="social-icons pt-3">
+                        <a href="#">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <h4>Newsletter</h4>
+                    <form class="newsletter-form">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="email@example.com" required>
+                        </div>
+                        <div class="pt-2">
+                            <button type="submit" class="subscribe-btn w-100">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-5">
+                <div class="payment-methods">
+                    <a href="#">
+                        <div class="payment-icon"><img src="assets/images/icons/icon-pay-01.png"></div>
+                    </a>
+                    <a href="#">
+                        <div class="payment-icon"><img src="assets/images/icons/icon-pay-02.png"></div>
+                    </a>
+                    <a href="#">
+                        <div class="payment-icon"><img src="assets/images/icons/icon-pay-03.png"></div>
+                    </a>
+                    <a href="#">
+                        <div class="payment-icon"><img src="assets/images/icons/icon-pay-04.png"></div>
+                    </a>
+                    <a href="#">
+                        <div class="payment-icon"><img src="assets/images/icons/icon-pay-05.png"></div>
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to top -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
     <script>
         // Update the cart icon in the navigation header
         document.addEventListener('DOMContentLoaded', function () {
@@ -714,6 +1320,23 @@ if (isset($_GET['remove'])) {
                     void element.offsetWidth; // Trigger reflow
                     element.style.animation = null;
                 });
+            });
+        });
+
+        const backToTopButton = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', function () {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        backToTopButton.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         });
     </script>
