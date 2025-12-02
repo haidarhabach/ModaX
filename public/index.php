@@ -2,7 +2,7 @@
 <html>
 <?php
 session_start();
-include '../includes/db.php';
+include 'db.php';
 // $_SESSION['cart'][] = [
 //   'id' => 1,
 //   'name' => 'White Shirt Pleat',
@@ -903,21 +903,35 @@ if (isset($_GET['remove'])) {
 
     <section class="product-grid">
         <div class="container">
+<!-- hasan !! -->
 
-
+<!-- 
+-------------------------------------
+data base query needed :
+select price,name,price,filename,type from products as p,product_images as i
+where  p.id = i.product_id;
+-------------------------------------
+-->
             <!-- Product Grid -->
             <div class="row" id="product-grid">
-                <!-- Product 1 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+<?php
+$stmt=$connect->prepare("select price,name,price,filename,type from products as p,product_images as i
+where  p.id = i.product_id;");
+$stmt->execute();
+$result=$stmt->get_result();
+while($row=$result->fetch_assoc())
+{
+    ?>
+<div class="col-sm-6 col-md-4 col-lg-3 product-item $row['type']">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="assets/images/product-01.jpg" alt="Esprit Ruffle Shirt">
+                            <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
                             <a href="#" class="quick-view-btn">Quick View</a>
                         </div>
                         <div class="product-info d-flex justify-content-between align-items-start">
                             <div>
-                                <a href="#" class="product-name">Esprit Ruffle Shirt</a>
-                                <div class="product-price">$16.64</div>
+                                <a href="#" class="product-name"><?= $row['name'] ?></a>
+                                <div class="product-price"><?= $row['price'] ?>$</div>
                             </div>
                             <button class="wishlist-btn">
                                 <i class="far fa-heart"></i>
@@ -925,216 +939,13 @@ if (isset($_GET['remove'])) {
                         </div>
                     </div>
                 </div>
+<?php
+}
 
-                <!-- Product 2 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-02.jpg" alt="Herschel supply">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Herschel supply</a>
-                                <div class="product-price">$35.31</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-03.jpg" alt="Only Check Trouser">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Only Check Trouser</a>
-                                <div class="product-price">$25.50</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-04.jpg" alt="Classic Trench Coat">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Classic Trench Coat</a>
-                                <div class="product-price">$75.00</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 5 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-05.jpg" alt="Front Pocket Jumper">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Front Pocket Jumper</a>
-                                <div class="product-price">$34.75</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 6 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item watches">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-06.jpg" alt="Vintage Inspired Classic">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Vintage Inspired Classic</a>
-                                <div class="product-price">$93.20</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 7 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-07.jpg" alt="Shirt in Stretch Cotton">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Shirt in Stretch Cotton</a>
-                                <div class="product-price">$52.66</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 8 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-08.jpg" alt="Pieces Metallic Printed">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Pieces Metallic Printed</a>
-                                <div class="product-price">$18.96</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 9 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item shoes">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-09.jpg" alt="Converse All Star Hi Plimsolls">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Converse All Star Hi Plimsolls</a>
-                                <div class="product-price">$75.00</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 10 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-10.jpg" alt="Femme T-Shirt In Stripe">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Femme T-Shirt In Stripe</a>
-                                <div class="product-price">$25.85</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 11 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-11.jpg" alt="Herschel supply">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Herschel supply</a>
-                                <div class="product-price">$63.16</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 12 -->
-                <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/product-12.jpg" alt="Herschel supply">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name">Herschel supply</a>
-                                <div class="product-price">$63.15</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+?>
+</div>
+                
+            
 
             <!-- Load More Button -->
             <div class="text-center mt-5">
