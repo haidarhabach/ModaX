@@ -906,8 +906,10 @@ if (isset($_GET['remove'])) {
             <!-- Product Grid -->
             <div class="row" id="product-grid">
 <?php
-$query = "select price,name,price,filename,type from products as p,product_images as i
-where  p.id = i.product_id";
+$query = "select price,name,price,filename,type from products as p,product_images as i,categories as c
+where  p.id = i.product_id
+and c.id= p.category_id;
+";
 
 // -- price --
 if (!empty($_GET['price'])) {
@@ -939,7 +941,7 @@ if (!empty($_GET['color'])) {
 // --- tag  ---
 if (!empty($_GET['tag'])) {
     $tag = $_GET['tag'];
-    $query .= " AND p.tag = '$tag'";
+    $query .= " AND c.tag = '$tag'";
 }
 
 // ----- sort -----
