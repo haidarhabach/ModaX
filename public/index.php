@@ -786,12 +786,11 @@ if (isset($_GET['remove'])) {
                     <div class="filter-header">
                         <i class="fas fa-filter me-2"></i> Filter Products
                     </div>
-
-                    <form method="GET" class="filter-body">
+<!-- todo ok hon htet laction bl form mshen bs a3ml apply filter m ytl3ne lfo2 ynzlne ltht yrj3  3al product-->
+                    <form action="#product-grid" method="GET" class="filter-body">
                         <?php if (!empty($_GET['category'])): ?>
                             <input type="hidden" name="category" value="<?= $_GET['category'] ?>">
                         <?php endif; ?>
-
                         <div class="row g-4">
                             <!-- SORT -->
                             <div class="col-md-3">
@@ -904,46 +903,98 @@ if (isset($_GET['remove'])) {
     <section class="product-grid">
         <div class="container">
 <!-- hasan !! -->
-
-<!-- 
--------------------------------------
-data base query needed :
-select price,name,price,filename,type from products as p,product_images as i
-where  p.id = i.product_id;
--------------------------------------
--->
             <!-- Product Grid -->
             <div class="row" id="product-grid">
 <?php
-$stmt=$connect->prepare("select price,name,price,filename,type from products as p,product_images as i
-where  p.id = i.product_id;");
-$stmt->execute();
-$result=$stmt->get_result();
-while($row=$result->fetch_assoc())
-{
-    ?>
-<div class="col-sm-6 col-md-4 col-lg-3 product-item $row['type']">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
-                            <a href="#" class="quick-view-btn">Quick View</a>
-                        </div>
-                        <div class="product-info d-flex justify-content-between align-items-start">
-                            <div>
-                                <a href="#" class="product-name"><?= $row['name'] ?></a>
-                                <div class="product-price"><?= $row['price'] ?>$</div>
-                            </div>
-                            <button class="wishlist-btn">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-<?php
+$query = "select price,name,price,filename,type from products as p,product_images as i
+where  p.id = i.product_id";
+
+// -- price --
+if (!empty($_GET['price'])) {
+    switch($_GET['price']) {
+        case '0-50':
+            $query .= " AND p.price BETWEEN 0 AND 50";
+            break;
+        case '50-100':
+            $query .= " AND p.price BETWEEN 50 AND 100";
+            break;
+        case '100-150':
+            $query .= " AND p.price BETWEEN 100 AND 150";
+            break;
+        case '150-200':
+            $query .= " AND p.price BETWEEN 150 AND 200";
+            break;
+        case '200':
+            $query .= " AND p.price >= 200";
+            break;
+    }
 }
 
+// --- color ----
+if (!empty($_GET['color'])) {
+    $color = $_GET['color'];
+    $query .= " AND p.color = '$color'";
+}
+
+// --- tag  ---
+if (!empty($_GET['tag'])) {
+    $tag = $_GET['tag'];
+    $query .= " AND p.tag = '$tag'";
+}
+
+// ----- sort -----
+if (!empty($_GET['sort'])) {
+    switch($_GET['sort']) {
+        case 'price_asc':
+            $query .= " ORDER BY p.price ASC";
+            break;
+        case 'price_desc':
+            $query .= " ORDER BY p.price DESC";
+            break;
+        case 'newness':
+            $query .= " ORDER BY p.created_at DESC";
+            break;
+        case 'popularity':
+            $query .= " ORDER BY p.popularity DESC"; 
+        default:
+            $query .= " ORDER BY p.id ASC";
+    }
+} else {
+    $query .= " ORDER BY p.id ASC"; // default sorting
+}
+
+// the query code < old one >
+$stmt = $connect->prepare($query);
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
+<div class="row" id="product-grid">
+<?php
+while ($row = $result->fetch_assoc()) {
+    ?>
+    <div class="col-sm-6 col-md-4 col-lg-3 product-item <?= $row['type'] ?>">
+        <div class="product-card">
+            <div class="product-image">
+                <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
+                <a href="#" class="quick-view-btn">Quick View</a>
+            </div>
+            <div class="product-info d-flex justify-content-between align-items-start">
+                <div>
+                    <a href="#" class="product-name"><?= $row['name'] ?></a>
+                    <div class="product-price"><?= $row['price'] ?>$</div>
+                </div>
+                <button class="wishlist-btn">
+                    <i class="far fa-heart"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+<?php
+}
 ?>
 </div>
+
                 
             
 
