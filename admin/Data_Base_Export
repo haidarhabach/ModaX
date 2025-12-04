@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Dec 04, 2025 at 08:03 PM
+-- Generation Time: Dec 04, 2025 at 08:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,24 +51,25 @@ CREATE TABLE `categories` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` varchar(200) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `tag` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`id`, `name`, `description`, `created_at`) VALUES
-(1, 'Banners', 'All banner images for the store', '2025-11-27 20:06:41'),
-(2, 'Blog', 'Blog related products and images', '2025-11-27 20:06:41'),
-(3, 'Gallery', 'Gallery images for products', '2025-11-27 20:06:41'),
-(4, 'Cart Items', 'Images for cart items', '2025-11-27 20:06:41'),
-(5, 'Products', 'Main fashion products', '2025-11-27 20:06:41'),
-(6, 'Product Details', 'Detailed images for products', '2025-11-27 20:06:41'),
-(7, 'Product Thumbnails', 'Thumbnail images for products', '2025-11-27 20:06:41'),
-(8, 'Slides', 'Slider images for homepage', '2025-11-27 20:06:41'),
-(9, 'Videos', 'Video preview images', '2025-11-27 20:06:41'),
-(10, 'Backgrounds', 'Background images and miscellaneous', '2025-11-27 20:06:41');
+INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `tag`) VALUES
+(1, 'Banners', 'All banner images for the store', '2025-11-27 20:06:41', NULL),
+(2, 'Blog', 'Blog related products and images', '2025-11-27 20:06:41', NULL),
+(3, 'Gallery', 'Gallery images for products', '2025-11-27 20:06:41', NULL),
+(4, 'Cart Items', 'Images for cart items', '2025-11-27 20:06:41', NULL),
+(5, 'Products', 'Main fashion products', '2025-11-27 20:06:41', NULL),
+(6, 'Product Details', 'Detailed images for products', '2025-11-27 20:06:41', NULL),
+(7, 'Product Thumbnails', 'Thumbnail images for products', '2025-11-27 20:06:41', NULL),
+(8, 'Slides', 'Slider images for homepage', '2025-11-27 20:06:41', NULL),
+(9, 'Videos', 'Video preview images', '2025-11-27 20:06:41', NULL),
+(10, 'Backgrounds', 'Background images and miscellaneous', '2025-11-27 20:06:41', NULL);
 
 -- --------------------------------------------------------
 
@@ -117,31 +118,30 @@ CREATE TABLE `products` (
   `stock` int(11) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `type` varchar(70) NOT NULL,
-  `color` varchar(60) DEFAULT NULL,
-  `tag` varchar(50) DEFAULT NULL
+  `color` varchar(60) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `price`, `sale_price`, `stock`, `created_at`, `type`, `color`, `tag`) VALUES
-(35, 1, 'Esprit Ruffle Shirt', 'Esprit Ruffle Shirt', 16.64, 16.64, 10, '2025-11-27 20:06:50', 'women', 'white', NULL),
-(36, 1, 'Herschel supply', 'Herschel supply', 35.31, 35.31, 10, '2025-11-27 20:06:50', 'women', 'white', NULL),
-(37, 1, 'Only Check Trouser', 'Only Check Trouser', 25.50, 25.50, 10, '2025-11-27 20:06:50', 'men', 'blue', NULL),
-(38, 1, 'Classic Trench Coat', 'Classic Trench Coat', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(39, 1, 'Front Pocket Jumper', 'Front Pocket Jumper', 34.75, 34.75, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(40, 1, 'Vintage Inspired Classic', 'Vintage Inspired Classic', 93.20, 93.20, 10, '2025-11-27 20:06:50', 'watches', NULL, NULL),
-(41, 1, 'Shirt in Stretch Cotton', 'Shirt in Stretch Cotton', 52.66, 52.66, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(42, 1, 'Pieces Metallic Printed', 'Pieces Metallic Printed', 18.96, 18.96, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(43, 1, 'Converse All Star Hi Plimsolls', 'Converse All Star Hi Plimsolls', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'shoes', NULL, NULL),
-(44, 1, 'Femme T-Shirt In Stripe', 'Femme T-Shirt In Stripe', 25.85, 25.85, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(45, 1, 'Herschel supply', 'Herschel supply', 63.16, 63.16, 10, '2025-11-27 20:06:50', 'men', NULL, NULL),
-(46, 1, 'Herschel supply', 'Herschel supply', 63.15, 63.15, 10, '2025-11-27 20:06:50', 'men', NULL, NULL),
-(47, 1, 'T-shirt with sleeve', 'T-shirt with sleeve', 18.49, 18.49, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(48, 1, 'Pretty little thing', 'Pretty little thing', 54.79, 54.79, 10, '2025-11-27 20:06:50', 'women', NULL, NULL),
-(49, 1, 'Mini silver mesh watch', 'Mini silver mesh watch', 86.85, 86.85, 10, '2025-11-27 20:06:50', 'watch', NULL, NULL),
-(50, 1, 'Square neck back', 'Square neck back', 29.64, 29.64, 10, '2025-11-27 20:06:50', 'women', NULL, NULL);
+INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `price`, `sale_price`, `stock`, `created_at`, `type`, `color`) VALUES
+(35, 1, 'Esprit Ruffle Shirt', 'Esprit Ruffle Shirt', 16.64, 16.64, 10, '2025-11-27 20:06:50', 'women', 'white'),
+(36, 1, 'Herschel supply', 'Herschel supply', 35.31, 35.31, 10, '2025-11-27 20:06:50', 'women', 'white'),
+(37, 1, 'Only Check Trouser', 'Only Check Trouser', 25.50, 25.50, 10, '2025-11-27 20:06:50', 'men', 'blue'),
+(38, 1, 'Classic Trench Coat', 'Classic Trench Coat', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'women', NULL),
+(39, 1, 'Front Pocket Jumper', 'Front Pocket Jumper', 34.75, 34.75, 10, '2025-11-27 20:06:50', 'women', NULL),
+(40, 1, 'Vintage Inspired Classic', 'Vintage Inspired Classic', 93.20, 93.20, 10, '2025-11-27 20:06:50', 'watches', NULL),
+(41, 1, 'Shirt in Stretch Cotton', 'Shirt in Stretch Cotton', 52.66, 52.66, 10, '2025-11-27 20:06:50', 'women', NULL),
+(42, 1, 'Pieces Metallic Printed', 'Pieces Metallic Printed', 18.96, 18.96, 10, '2025-11-27 20:06:50', 'women', NULL),
+(43, 1, 'Converse All Star Hi Plimsolls', 'Converse All Star Hi Plimsolls', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'shoes', NULL),
+(44, 1, 'Femme T-Shirt In Stripe', 'Femme T-Shirt In Stripe', 25.85, 25.85, 10, '2025-11-27 20:06:50', 'women', NULL),
+(45, 1, 'Herschel supply', 'Herschel supply', 63.16, 63.16, 10, '2025-11-27 20:06:50', 'men', NULL),
+(46, 1, 'Herschel supply', 'Herschel supply', 63.15, 63.15, 10, '2025-11-27 20:06:50', 'men', NULL),
+(47, 1, 'T-shirt with sleeve', 'T-shirt with sleeve', 18.49, 18.49, 10, '2025-11-27 20:06:50', 'women', NULL),
+(48, 1, 'Pretty little thing', 'Pretty little thing', 54.79, 54.79, 10, '2025-11-27 20:06:50', 'women', NULL),
+(49, 1, 'Mini silver mesh watch', 'Mini silver mesh watch', 86.85, 86.85, 10, '2025-11-27 20:06:50', 'watch', NULL),
+(50, 1, 'Square neck back', 'Square neck back', 29.64, 29.64, 10, '2025-11-27 20:06:50', 'women', NULL);
 
 -- --------------------------------------------------------
 
