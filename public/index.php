@@ -906,10 +906,8 @@ if (isset($_GET['remove'])) {
             <!-- Product Grid -->
             <div class="row" id="product-grid">
 <?php
-$query = "select price,name,price,filename,type from products as p,product_images as i,categories as c
-where  p.id = i.product_id
-and c.id= p.category_id;
-";
+$query = "select p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
+where  p.id = i.product_id AND c.id= p.category_id";
 
 // -- price --
 if (!empty($_GET['price'])) {
