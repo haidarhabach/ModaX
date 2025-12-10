@@ -775,31 +775,12 @@ if (!empty($_GET['sort'])) {
 } else {
     $query .= " ORDER BY p.id ASC"; // default sorting
 }
-//work here !!!!!!!!!!!
-if(isset($_GET["search"]))
-{
-    // %x% fi x bhyla mahal :}
-    // haidar 3mol eza 3tet product aw category msh b db y3rod aashshe eno invalid product aw hek shi
-    $search =  "%" .$_GET["search"]. "%" ;
-    // htet % len lhmr yemkn m yktb esm lproduct kemel msln Esprit Langue yemkn yktb bs Esprit 
-    // aw bs sprit hon btbyn 3endo 3l halten :)
-    //Like mhtta leno hnshf string Hasan Like Hasan = > return data .. :() 
 
-    $query = "SELECT p.price, p.name, filename, p.type
-            FROM products AS p 
-            JOIN product_images AS i ON p.id = i.product_id
-            JOIN categories AS c ON c.id = p.category_id
-            WHERE p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ?";
-    
-    $stmt = $connect->prepare($query);
-    $stmt->bind_param("sss", $search, $search,$search);
-    $stmt->execute();
-}
-else {
+
 // the query code < old one >
 $stmt = $connect->prepare($query);
 $stmt->execute();
-}
+
 $result = $stmt->get_result();
 ?>
             
@@ -1033,3 +1014,4 @@ while ($row = $result->fetch_assoc()) {
 </body>
 
 </html>
+
