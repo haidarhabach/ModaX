@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Dec 04, 2025 at 08:15 PM
+-- Generation Time: Dec 16, 2025 at 06:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -126,7 +126,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `price`, `sale_price`, `stock`, `created_at`, `type`, `color`) VALUES
-(35, 1, 'Esprit Ruffle Shirt', 'Esprit Ruffle Shirt', 16.64, 16.64, 10, '2025-11-27 20:06:50', 'women', 'white'),
+(35, 1, 'Esprit Ruffle Shirt', 'Esprit Ruffle Shirt love', 16.64, 16.64, 10, '2025-11-27 20:06:50', 'women', 'white'),
 (36, 1, 'Herschel supply', 'Herschel supply', 35.31, 35.31, 10, '2025-11-27 20:06:50', 'women', 'white'),
 (37, 1, 'Only Check Trouser', 'Only Check Trouser', 25.50, 25.50, 10, '2025-11-27 20:06:50', 'men', 'blue'),
 (38, 1, 'Classic Trench Coat', 'Classic Trench Coat', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'women', NULL),
@@ -141,7 +141,7 @@ INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `price`, `sa
 (47, 1, 'T-shirt with sleeve', 'T-shirt with sleeve', 18.49, 18.49, 10, '2025-11-27 20:06:50', 'women', NULL),
 (48, 1, 'Pretty little thing', 'Pretty little thing', 54.79, 54.79, 10, '2025-11-27 20:06:50', 'women', NULL),
 (49, 1, 'Mini silver mesh watch', 'Mini silver mesh watch', 86.85, 86.85, 10, '2025-11-27 20:06:50', 'watch', NULL),
-(50, 1, 'Square neck back', 'Square neck back', 29.64, 29.64, 10, '2025-11-27 20:06:50', 'women', NULL);
+(50, 1, 'Square neck back', 'Square neck back', 29.64, 29.64, 10, '2025-10-27 20:06:50', 'women', NULL);
 
 -- --------------------------------------------------------
 
