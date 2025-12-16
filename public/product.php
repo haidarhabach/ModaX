@@ -1,6 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<?php
+    session_start();
+    include 'db.php';
+if(!isset($_SESSION["cart"]))
+{
+    $_SESSION["cart"]=[];
+}
+
+// Handle cart item removal
+if (isset($_GET['remove'])) {
+    $remove_id = $_GET['remove'];
+// hone index 0 1 .. 
+    foreach ($_SESSION['cart'] as $index => $item) {
+        if ($item['id'] == $remove_id) {
+            unset($_SESSION['cart'][$index]);
+            break;
+        }
+    }
+
+    $_SESSION['cart'] = array_values($_SESSION['cart']);
+
+    // for no overlap with remove delete the remove get
+$params = $_GET;
+unset($params['remove'], $params['add'], $params['addToCart']);
+// http_build_query ha hatyto lyhwel shkel lstring l shkel string mtl url => ?x=10&y=1 ..
+$query = http_build_query($params);
+// hon check fi ken 3ena get 8er lremove ?? eza eh hotn eza la hot '' ftrd fi x btsr ?x
+$url = $_SERVER['PHP_SELF'] . ($query ? '?' . $query : '');
+
+header("Location: $url");
+exit;
+}
+
+
+if (isset($_GET['add']) && $_GET['add'] == 1)
+{
+    $name   =   $_GET['name'];
+    $id     =   $_GET['id'];
+    $price  =   $_GET['price'];
+    $qty    =   $_GET['qty'];
+    $photo  = $_GET['photo'];
+    
+    $found=false;
+    //& to change the session by variable 
+    foreach($_SESSION["cart"] as &$v)
+    {
+        if($v['id'] == $id)
+        {
+            $v['qty']+=$qty;
+            $found=true;
+            break;
+        }
+    }
+    if($found==false)
+    {
+        $_SESSION["cart"][]=
+        [
+            'id'=>$id,
+            'name'  =>  $name,
+            'price' =>  $price,
+            'qty'   => $qty,
+            'photo' =>   $photo
+        ];
+    }
+    $params = $_GET;
+    // le hatt add w addtocart mshen m kn 3mel remove ba3ed ladd m yrj3 usr overload tzid kmeye w ana bde emhe :)
+unset($params['add'], $params['addToCart'], $params['qty']);
+
+$query = http_build_query($params);
+header("Location: product.php" . ($query ? "?$query" : ""));
+exit;
+}
+
+
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,23 +87,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
-    <?php
-    session_start();
-    include 'db.php';
-    
-    // Handle cart item removal
-    if (isset($_GET['remove'])) {
-        $remove_id = $_GET['remove'];
-        foreach ($_SESSION['cart'] as $index => $item) {
-            if ($item['id'] == $remove_id) {
-                unset($_SESSION['cart'][$index]);
-            }
-        }
-        $_SESSION['cart'] = array_values($_SESSION['cart']);
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-    ?>
+
     <style>
         /* Global Styles */
         body {
@@ -978,7 +1038,10 @@
 .main-product-img {
     cursor: pointer;
 }
-
+/* hasan jak */
+.display-content-form{
+    display: contents;
+}
 .main-product-img:hover {
     opacity: 0.95;
 }
@@ -1073,6 +1136,7 @@
         <div class="offcanvas-body p-0">
             <div class="cart-items-container" style="max-height: 400px; overflow-y: auto;">
                 <ul class="list-group list-group-flush">
+                    <!-- hasan + haidar backend and front end  -->
                     <?php
                     $total = 0;
                     if (!empty($_SESSION['cart'])):
@@ -1083,7 +1147,7 @@
                     <li class="list-group-item border-0">
                         <div class="row align-items-center g-3">
                             <div class="col-3">
-                                <img src="<?= htmlspecialchars($item['image']) ?>" class="img-fluid rounded" alt="<?= htmlspecialchars($item['name']) ?>">
+                                <img src="assets/images/<?= htmlspecialchars($item['photo']) ?>" class="img-fluid rounded" alt="<?= htmlspecialchars($item['name']) ?>">
                             </div>
                             <div class="col-9">
                                 <a href="#" class="text-decoration-none text-dark fw-semibold d-block mb-1">
@@ -1092,9 +1156,12 @@
                                 <span class="text-muted small">
                                     <?= htmlspecialchars($item['qty']) ?> x $<?= number_format($item['price'], 2) ?>
                                 </span>
-                                <a href="?remove=<?= htmlspecialchars($item['id']) ?>" class="btn btn-sm btn-outline-danger mt-1">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                <!-- why use this ? to dont forget the get reload page with all 
+                                get only add the remove to get-->
+                                <a href="<?= $_SERVER['REQUEST_URI'] ?>&remove=<?= $item['id'] ?>"
+                        class="btn btn-sm btn-outline-danger mt-1">
+                            <i class="fas fa-trash"></i>
+                                    </a>
                             </div>
                         </div>
                     </li>
@@ -1204,6 +1271,14 @@
                                 </select>
                             </div>
 
+                            <!-- can use with the Post but its ok :P -->
+                            <form method="GET" class="display-content-form">
+
+                            <input type="hidden" name="id" value="<?= $_GET["id"]??"" ?>">
+                            <input type="hidden" name="name" value="<?= $_GET["name"]??"" ?>">
+                            <input type="hidden" name="price" value="<?= $_GET["price"]??"" ?>">
+                            <input type="hidden" name="photo" value="<?= $_GET["photo"]??"" ?>">
+                            <input type="hidden" name="add" value="1">
                             <!-- Quantity Selection -->
                             <div class="form-row">
                                 <label>Quantity</label>
@@ -1211,20 +1286,23 @@
                                     <button type="button" class="qty-btn" onclick="decreaseQuantity()">
                                         <i class="fa fa-minus"></i>
                                     </button>
-                                    <input class="qty-input" type="number" value="1" id="quantity" min="1">
+                                    <input class="qty-input" name="qty" type="number" value="1" id="quantity" min="1">
                                     <button type="button" class="qty-btn" onclick="increaseQuantity()">
                                         <i class="fa fa-plus"></i>
                                     </button>
                                 </div>
                             </div>
 
+                            
+                            
                             <!-- Add to Cart -->
                             <div class="form-row">
                                 <label></label>
-                                <button class="add-to-cart-btn small-btn" onclick="addToCart()">
+                                <button type="submit" name="addToCart" class="add-to-cart-btn small-btn" onclick="addToCart()">
                                     <i class="fa fa-shopping-cart me-2"></i> Add to Cart
                                 </button>
                             </div>
+                            </form>
                         </div>
                     </div>
                 </div>
