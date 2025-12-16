@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <?php
     session_start();
-    include '../includes/db.php';
+    include 'db.php';
     
     // Handle cart item removal
     if (isset($_GET['remove'])) {
@@ -1131,8 +1131,12 @@
 <div class="col-lg-6">
     <div class="product-images">
         <div class="main-product-img" id="mainProductContainer">
-            <img id="mainProductImage" src="assets/images/product-01.jpg" alt="Lightweight Jacket" 
-                 onclick="openImageZoom()">
+            <img id="mainProductImage" src="assets/images/<?php if(isset($_GET["photo"])){echo $_GET["photo"];}
+                else {
+                    echo "";
+                }
+                ?>" alt="<?php if(isset($_GET["name"])){echo $_GET["name"];} ?>" 
+                onclick="openImageZoom()">
             <a href="#" class="img-zoom-btn" id="zoomButton" onclick="openImageZoom(); return false;">
                 <i class="fa fa-expand"></i>
             </a>
@@ -1172,8 +1176,8 @@
                 <!-- Product Info -->
                 <div class="col-lg-6">
                     <div class="product-info">
-                        <h1>Lightweight Jacket</h1>
-                        <div class="product-price">$58.79</div>
+                        <h1><?= $_GET["name"] ?? "Guest" ?></h1>
+                        <div class="product-price"><?= $_GET["price"]?? "0" ?>$</div>
 
                         <div class="form-grid">
                             <!-- Size Selection -->
@@ -1245,7 +1249,20 @@
                     <!-- Description Tab -->
                     <div class="tab-pane fade show active" id="description" role="tabpanel">
                         <p class="mt-4">
-                            Add product description here from database.
+                            <?php
+                            if(isset($_GET["name"]) && isset($_GET["type"])){
+                            $stmt=$connect->prepare("select description from products 
+                            where name = ? AND type = ? ");
+                            $stmt->bind_param("ss",$_GET["name"],$_GET["type"]);
+                            $stmt->execute();
+                            $result=$stmt->get_result();
+                            if($result->num_rows==1)
+                            {
+                                $row=$result->fetch_assoc();
+                                echo $row["description"];
+                            }
+                            }
+                            ?>
                         </p>
                     </div>
 
@@ -1283,17 +1300,40 @@
             <h3>Related Products</h3>
         </div>
         <div class="row" id="product-grid">
-            <!-- Product 1 -->
-            <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
+            
+        <!-- Hasan data base query -->
+        <?php
+        $stmt=$connect->prepare("SELECT p.category_id,p.id,p.price, p.name, i.filename, p.type
+                        FROM products AS p
+                        JOIN product_images AS i ON p.id = i.product_id
+                        JOIN categories AS c ON c.id = p.category_id
+                        WHERE p.category_id = ? 
+                        AND p.type = ?
+                        AND p.id != ?"); // la5era mshen m y3rdle nfs product mra tenye
+        
+$stmt->bind_param("isi", $_GET["category"],$_GET["type"],$_GET["id"]);
+$stmt->execute();
+$result=$stmt->get_result();
+        ?>
+        <?php
+        if ($result->num_rows>0)
+            {
+                while($row=$result->fetch_assoc())
+                {
+                    ?>
+            <!-- Product i -->
+            <div class="col-sm-6 col-md-4 col-lg-3 product-item <?= $row["type"] ?>">
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="assets/images/product-01.jpg" alt="Esprit Ruffle Shirt">
-                        <a href="#" class="quick-view-btn">Quick View</a>
+                        <img src="assets/images/<?= $row["filename"] ?>" alt="<?= $row["name"] ?>">
+                        <a href="product.php?name=<?= $row['name'] ?>&price=
+                <?= $row['price'] ?>&photo=<?= $row['filename'] ?>&type=<?= $row['type'] ?>
+                &id=<?= $row['id'] ?> &category=<?= $row['category_id'] ?>" class="quick-view-btn">Quick View</a>
                     </div>
                     <div class="product-info d-flex justify-content-between align-items-start">
                         <div>
-                            <a href="#" class="product-name">Esprit Ruffle Shirt</a>
-                            <div class="product-price">$16.64</div>
+                            <a href="#" class="product-name"><?= $row["name"] ?></a>
+                            <div class="product-price"><?= $row["price"] ?></div>
                         </div>
                         <button class="wishlist-btn">
                             <i class="far fa-heart"></i>
@@ -1301,63 +1341,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Product 2 -->
-            <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="assets/images/product-02.jpg" alt="Herschel supply">
-                        <a href="#" class="quick-view-btn">Quick View</a>
-                    </div>
-                    <div class="product-info d-flex justify-content-between align-items-start">
-                        <div>
-                            <a href="#" class="product-name">Herschel supply</a>
-                            <div class="product-price">$35.31</div>
-                        </div>
-                        <button class="wishlist-btn">
-                            <i class="far fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="col-sm-6 col-md-4 col-lg-3 product-item men">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="assets/images/product-03.jpg" alt="Only Check Trouser">
-                        <a href="#" class="quick-view-btn">Quick View</a>
-                    </div>
-                    <div class="product-info d-flex justify-content-between align-items-start">
-                        <div>
-                            <a href="#" class="product-name">Only Check Trouser</a>
-                            <div class="product-price">$25.50</div>
-                        </div>
-                        <button class="wishlist-btn">
-                            <i class="far fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="col-sm-6 col-md-4 col-lg-3 product-item women">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="assets/images/product-04.jpg" alt="Classic Trench Coat">
-                        <a href="#" class="quick-view-btn">Quick View</a>
-                    </div>
-                    <div class="product-info d-flex justify-content-between align-items-start">
-                        <div>
-                            <a href="#" class="product-name">Classic Trench Coat</a>
-                            <div class="product-price">$75.00</div>
-                        </div>
-                        <button class="wishlist-btn">
-                            <i class="far fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <?php 
+                }
+            }?>
         </div>
     </div>
     <!-- Footer -->
@@ -1796,3 +1782,6 @@ document.addEventListener('keydown', function(e) {
 </body>
 
 </html>
+
+
+
