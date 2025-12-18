@@ -719,7 +719,7 @@ if (isset($_GET['remove'])) {
         <div class="container">
 <div class="row" id="product-grid">
 <?php
-$query = "select p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
+$query = "select p.id,p.category_id,p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
 where  p.id = i.product_id AND c.id= p.category_id";
 
 // -- price --
@@ -775,12 +775,32 @@ if (!empty($_GET['sort'])) {
 } else {
     $query .= " ORDER BY p.id ASC"; // default sorting
 }
+//work here !!!!!!!!!!!
+if(isset($_GET["search"]))
+{
+    // %x% fi x bhyla mahal :}
+    // haidar 3mol eza 3tet product aw category msh b db y3rod aashshe eno invalid product aw hek shi
+    $search =  "%" .$_GET["search"]. "%" ;
+    // htet % len lhmr yemkn m yktb esm lproduct kemel msln Esprit Langue yemkn yktb bs Esprit 
+    // aw bs sprit hon btbyn 3endo 3l halten :)
+    //Like mhtta leno hnshf string Hasan Like Hasan = > return data .. :() 
 
+    $query = "SELECT p.price, p.name, filename, p.type
+            FROM products AS p 
+            JOIN product_images AS i ON p.id = i.product_id
+            JOIN categories AS c ON c.id = p.category_id
+            WHERE p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ? OR p.type LIKE ?";
+    
+    $stmt = $connect->prepare($query);
+    $stmt->bind_param("ssss", $search, $search,$search,$search);
+    $stmt->execute();
+}
+else {
 
 // the query code < old one >
 $stmt = $connect->prepare($query);
 $stmt->execute();
-
+}
 $result = $stmt->get_result();
 ?>
             
@@ -793,7 +813,9 @@ while ($row = $result->fetch_assoc()) {
         <div class="product-card">
             <div class="product-image">
                 <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
-                <a href="#" class="quick-view-btn">Quick View</a>
+                <a href="product.php?name=<?= $row['name'] ?>&price=
+                <?= $row['price'] ?>&photo=<?= $row['filename'] ?>&type=<?= $row['type'] ?>
+                &id=<?= $row['id'] ?> &category=<?= $row['category_id'] ?>" class="quick-view-btn">Quick View</a>
             </div>
             <div class="product-info d-flex justify-content-between align-items-start">
                 <div>
@@ -1014,4 +1036,3 @@ while ($row = $result->fetch_assoc()) {
 </body>
 
 </html>
-
