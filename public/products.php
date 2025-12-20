@@ -748,7 +748,17 @@ if (!empty($_GET['color'])) {
     $color = $_GET['color'];
     $query .= " AND p.color = '$color'";
 }
-
+//abdallah
+if(isset($_GET['category']) && $_GET['category'] =="women"){
+    $query.= " AND p.type = 'women'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="men"){
+    $query.= " AND p.type = 'men'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="bag"){
+    $query.= " AND p.type = 'bag'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="shoes"){
+    $query.= " AND p.type = 'shoes'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="watches"){
+    $query.= " AND p.type = 'watches'";}
 // --- tag  ---
 if (!empty($_GET['tag'])) {
     $tag = $_GET['tag'];
@@ -775,32 +785,23 @@ if (!empty($_GET['sort'])) {
 } else {
     $query .= " ORDER BY p.id ASC"; // default sorting
 }
-//work here !!!!!!!!!!!
-if(isset($_GET["search"]))
-{
-    // %x% fi x bhyla mahal :}
-    // haidar 3mol eza 3tet product aw category msh b db y3rod aashshe eno invalid product aw hek shi
-    $search =  "%" .$_GET["search"]. "%" ;
-    // htet % len lhmr yemkn m yktb esm lproduct kemel msln Esprit Langue yemkn yktb bs Esprit 
-    // aw bs sprit hon btbyn 3endo 3l halten :)
-    //Like mhtta leno hnshf string Hasan Like Hasan = > return data .. :() 
-
-    $query = "SELECT p.price, p.name, filename, p.type
-            FROM products AS p 
-            JOIN product_images AS i ON p.id = i.product_id
-            JOIN categories AS c ON c.id = p.category_id
-            WHERE p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ? OR p.type LIKE ?";
+//hammoud
+if(isset($_GET['search'])){
+    $search="%". $_GET['search'] ."%";
+    $query="select p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
+where  p.id = i.product_id AND c.id= p.category_id
+and (p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ? OR p.type LIKE ?)";
+$stmt=$connect->prepare($query);
+$stmt->bind_param("ssss",$search,$search,$search,$search);
+$stmt->execute();
     
-    $stmt = $connect->prepare($query);
-    $stmt->bind_param("ssss", $search, $search,$search,$search);
-    $stmt->execute();
 }
-else {
-
-// the query code < old one >
-$stmt = $connect->prepare($query);
+else{
+    $stmt = $connect->prepare($query);
 $stmt->execute();
 }
+
+// the query code < old one >
 $result = $stmt->get_result();
 ?>
             
@@ -1036,3 +1037,4 @@ while ($row = $result->fetch_assoc()) {
 </body>
 
 </html>
+
