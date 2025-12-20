@@ -1,7 +1,8 @@
 <html>
 
 <?php
-include('C:\xamppp\htdocs\Testing_Mouda\db.php');
+session_start();
+include('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
@@ -14,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     $password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
 
-    $stmt = $connect->prepare("SELECT password_hash FROM users WHERE email = ?");
+    $stmt = $connect->prepare("SELECT id,password_hash FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
 
@@ -27,9 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         if (password_verify($password, $hashedPassword)) {
 
-            session_start();
+            
             $_SESSION['user'] = $email;
-
+            $_SESSION['user_id']=$row['id'];
             header("Location: index.php");
             exit();
 
