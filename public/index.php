@@ -2,7 +2,7 @@
 <html>
 <?php
 session_start();
-include 'db.php';
+include '../includes/db.php';
 // $_SESSION['cart'][] = [
 //   'id' => 1,
 //   'name' => 'White Shirt Pleat',
@@ -941,7 +941,18 @@ if (!empty($_GET['tag'])) {
     $tag = $_GET['tag'];
     $query .= " AND c.tag = '$tag'";
 }
-
+//abdallah
+if(isset($_GET['category']) && $_GET['category'] =="women"){
+    $query.= " AND p.type = 'women'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="men"){
+    $query.= " AND p.type = 'men'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="bag"){
+    $query.= " AND p.type = 'bag'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="shoes"){
+    $query.= " AND p.type = 'shoes'";}
+    else if(isset($_GET['category']) && $_GET['category'] =="watches"){
+    $query.= " AND p.type = 'watches'";}
+    
 // ----- sort -----
 if (!empty($_GET['sort'])) {
     switch($_GET['sort']) {
