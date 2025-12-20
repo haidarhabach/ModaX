@@ -1,8 +1,93 @@
+<?php
+// 20/12/hasan all backend :O
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php'); 
+    exit;
+}
+include 'db.php';
+$coupon_cart = ["hasan"=>20 , "haidar"=>20 , "hammoud"=>10,"abdallah"=>5];
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
+
+    $cart = json_decode($_POST['cart'], true); // to get by name !!
+    
+    if(empty($cart))
+    {
+        echo "error";
+        exit;
+    }
+
+    $cartTotal = (float) $_POST['cartTotal'];
+    
+    $shipping_country = $_SESSION['lastShippingChoise'] ?? '';
+
+    $shippingTotal = (float) $_POST['shippingTotal'];
+    
+    $discountTotal = (float) $_POST['discountTotal'];
+    
+    $paymentMethod = $_POST['paymentMethod']; 
+    
+    $total = ($cartTotal > 100 ? $cartTotal : $cartTotal + $shippingTotal) - $discountTotal;
+
+    $stmt = $connect->prepare("INSERT INTO orders (user_id,total,shipping_address, shipping, discount, payment_method, created_at) VALUES (? , ?,?, ?, ?, ?, NOW())");
+    $stmt->bind_param("idsdds",$_SESSION['user_id'],$total,$shipping_country, $shippingTotal, $discountTotal, $paymentMethod);
+    $stmt->execute();
+    $order_id = $stmt->insert_id;
+    $stmt->close();
+    // save order item to see the status 
+    foreach($cart as $item){
+        $stmt = $connect->prepare("INSERT INTO order_items (order_id, product_id, quantity, product_name, price) VALUES (? ,?, ?, ?, ?)");
+        $stmt->bind_param("iiisd", $order_id, $item['id'], $item['qty'],$item['name'], $item['price']);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    // delete cart after finish 
+    $_SESSION['cart'] = [];
+    $_SESSION['couponTotal'] = 0;
+    $_SESSION['shipping'] = 0;
+    // masseg lhrje3a ll ajax
+    echo 'success';
+    exit;
+}
+if(isset($_POST['coupon']))
+{
+    $coupon = strtolower(trim($_POST['coupon']));
+    if(array_key_exists($coupon,$coupon_cart))
+    {
+        $couponTotal=$coupon_cart[$coupon];
+    }
+    else {
+        $couponTotal=0;
+    }
+    $_SESSION['couponTotal']=$couponTotal;
+    echo $couponTotal; // hay eza bdkon bs b3at l js l coupon ll php lezm php yredo llui ha lrad mtl sent
+    exit; // for no overlap with the html js return full html page !!
+}
+?>
+<?php
+if(!isset($cartTotal))
+{
+    $cartTotal = 0;
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
+    $newQuantities = $_POST['qty'] ?? [];
+
+    foreach ($_SESSION['cart'] as  &$item) {
+        $key =$item['id'] ;
+            if (isset($newQuantities[$key])) {
+            $item['qty'] = (int) $newQuantities[$key];
+        }
+    }
+    unset($item); // ha bs mshen a3ml unlink llpointer lmhtot 3l session lhez fo2 l & lsert sherha 700 mra
+$cartTotal=0;
+}
+
+?>
 <!DOCTYPE html>
 <html>
 <?php
-session_start();
-include '../includes/db.php';
+
 // $_SESSION['cart'][] = [
 //   'id' => 1,
 //   'name' => 'White Shirt Pleat',
@@ -10,18 +95,24 @@ include '../includes/db.php';
 //   'qty' => 1,
 //   'image' => 'assets/images/item-cart-01.jpg'
 //  ];
-
+$cart=$_SESSION['cart'] ?? [];
+$total=0;
+$shipping_discound=["United Status"=>20 , "United Kingdom"=>20 , "Lebanon"=>50 , "Canada"=>20 , "Syria"=>50];
 if (isset($_GET['remove'])) {
-    $remove_id = $_GET['remove'];
-    foreach ($_SESSION['cart'] as $index => $item) {
-        if ($item['id'] == $remove_id) {
-            unset($_SESSION['cart'][$index]);
+    $remove_id = (int)$_GET['remove']; 
+    if (!empty($_SESSION['cart'])) {
+        foreach ($_SESSION['cart'] as $index => $item) {
+            if ($item['id'] == $remove_id) {
+                unset($_SESSION['cart'][$index]);
+            }
         }
+        $_SESSION['cart'] = array_values($_SESSION['cart']);
     }
-    $_SESSION['cart'] = array_values($_SESSION['cart']);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
+
+
 ?>
 
 <head>
@@ -625,6 +716,9 @@ if (isset($_GET['remove'])) {
                 margin-bottom: 30px;
             }
         }
+        .display-content{
+            display: contents;
+        }
     </style>
 </head>
 
@@ -729,6 +823,8 @@ if (isset($_GET['remove'])) {
             </div>
         </div>
     </div>
+<!-- hasan remove backend  -->
+
 
     <!-- Cart Sidebar-->
 
@@ -748,7 +844,7 @@ if (isset($_GET['remove'])) {
                     if (!empty($_SESSION['cart'])):
                         foreach ($_SESSION['cart'] as $item):
                             $itemTotal = $item['price'] * $item['qty'];
-                            $total += $itemTotal;
+                            $cartTotal += $itemTotal;
                             ?>
 
                             <li class="list-group-item border-0">
@@ -765,7 +861,7 @@ if (isset($_GET['remove'])) {
                                         <span class="text-muted small">
                                             <?= $item['qty'] ?> x $<?= number_format($item['price'], 2) ?>
                                         </span>
-
+                                        
                                         <a href="?remove=<?= $item['id'] ?>" class="btn btn-sm btn-outline-danger mt-1">
                                             <i class="fas fa-trash"></i>
                                         </a>
@@ -803,6 +899,7 @@ if (isset($_GET['remove'])) {
         <div class="container">
             <div class="row">
                 <!-- Cart Items -->
+                <form class="display-content" method="post">
                 <div class="col-lg-8">
                     <!-- Empty Cart Message (Hidden by default) -->
                     <div id="emptyCart" class="empty-cart" style="display: none;">
@@ -813,99 +910,82 @@ if (isset($_GET['remove'])) {
                         <p>Looks like you haven't added any items to your cart yet.</p>
                         <a href="shop.html" class="btn-checkout">Continue Shopping</a>
                     </div>
+                        <!-- Backend Hasan -->
 
+
+                         <!-- // $_SESSION['cart'][] = [
+                        //   'id' => 1,
+                        //   'name' => 'White Shirt Pleat',
+                        //   'price' => 19.00,
+                        //   'qty' => 1,
+                        //   'image' => 'assets/images/item-cart-01.jpg'
+                        //  ]; -->
                     <!-- Cart with Items -->
                     <div id="cartWithItems" class="cart-container fade-in">
                         <div class="cart-header">
-                            <h3>Your Cart Items (2)</h3>
+                            <h3>Your Cart Items <?= count($_SESSION['cart']) ?></h3>
                         </div>
-
+                        
                         <div class="cart-items">
-                            <!-- Cart Item 1 -->
-                            <div class="cart-item" id="item1">
+                        <?php 
+                        $i=1;
+                        foreach($cart as $value)
+                        {
+                            $total+=$value['price'] * $value['qty'];
+                        ?>  
+                        <!-- Cart Item i -->
+                            <div class="cart-item" id=<?php echo "item".$i; ?>>
                                 <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                        alt="Fresh Strawberries">
+                                    <img src="assets/images/<?= $value['photo'] ?>"
+                                        alt="<?= $value['name'] ?>">
                                 </div>
-
                                 <div class="item-details">
-                                    <h4 class="item-title">Fresh Strawberries</h4>
-                                    <div class="item-price">$36.00</div>
+                                    <h4 class="item-title"><?= $value['name'] ?></h4>
+                                    <div class="item-price"><?= $value['price']*$value['qty'] ?>$</div>
 
                                     <div class="quantity-selector">
-                                        <button class="qty-btn qty-decrease" data-item="1">
+                                        <button type="button" class="qty-btn qty-decrease" data-item="<?= $i ?>">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                        <input class="qty-input" type="number" value="1" min="1" data-price="36.00"
-                                            data-item="1">
-                                        <button class="qty-btn qty-increase" data-item="1">
+                                        <input class="qty-input" type="number" name="qty[<?= $value['id'] ?>]" value="<?= $value['qty'] ?>" min="1" data-price="<?= $value['price'] ?>"
+                                            data-item="<?= $i ?>">
+                                        <button type="button" class="qty-btn qty-increase" data-item="<?= $i ?>">
                                             <i class="fas fa-plus"></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 <div class="item-total ms-auto me-3">
-                                    <div class="item-price" id="itemTotal1">$36.00</div>
+                                    <div class="item-price" id="itemTotal1"><?= $value['price']*$value['qty'] ?>$</div>
                                 </div>
 
-                                <button class="item-remove">
+                                <button type="button" class="item-remove">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
 
-                            <!-- Cart Item 2 -->
-                            <div class="cart-item" id="item2">
-                                <div class="item-image">
-                                    <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w-400&q=80"
-                                        alt="Lightweight Jacket">
-                                </div>
-
-                                <div class="item-details">
-                                    <h4 class="item-title">Lightweight Jacket</h4>
-                                    <div class="item-price">$16.00</div>
-
-                                    <div class="quantity-selector">
-                                        <button class="qty-btn qty-decrease" data-item="2">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <input class="qty-input" type="number" value="1" min="1" data-price="16.00"
-                                            data-item="2">
-                                        <button class="qty-btn qty-increase" data-item="2">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="item-total ms-auto me-3">
-                                    <div class="item-price" id="itemTotal2">$16.00</div>
-                                </div>
-
-                                <button class="item-remove">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
+                        <?php } ?>
                         </div>
-                    </div>
-
+                    </div> 
                     <!-- Coupon Section -->
                     <div class="coupon-update-row fade-in mb-5">
                         <div class="coupon-section flex-grow-1">
                             <h4 class="coupon-title">Have a coupon code?</h4>
                             <div class="coupon-input-group">
-                                <input type="text" class="coupon-input" placeholder="Enter coupon code">
-                                <button class="btn-coupon">Apply</button>
+                                <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code">
+                                <button type="button" id="applyCoupon" class="btn-coupon">Apply</button>
                             </div>
                         </div>
-
+                            
                         <div class="update-cart-wrapper">
-                            <button class="btn-update h-100">
+                            <button type="submit" name="update" class="btn-update h-100">
                                 <i class="fas fa-sync-alt me-2"></i> Update Cart
                             </button>
                         </div>
                     </div>
 
                 </div>
-
+                        </form>
                 <!-- Cart Summary -->
                 <div class="col-lg-4">
                     <div class="cart-summary fade-in">
@@ -913,50 +993,74 @@ if (isset($_GET['remove'])) {
 
                         <div class="summary-item">
                             <span class="summary-label">Subtotal</span>
-                            <span class="summary-value" id="subtotal">$52.00</span>
+                            <span class="summary-value" id="subtotal"><?= number_format($cartTotal, 2) ?>$</span>
                         </div>
-
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['shippingButton'])) {
+    $parts=explode("-",$_POST['shipping_name']);
+    $_SESSION['shipping'] = (float) $parts[0];
+    $_SESSION['lastShippingChoise']=$parts[1];
+}
+$shippingTotal = $_SESSION['shipping'] ?? 0.00;
+?>
                         <div class="summary-item">
                             <span class="summary-label">Shipping</span>
-                            <span class="summary-value" id="shipping">$0.00</span>
+                            <span class="summary-value" id="shipping"><?php 
+                            if($cartTotal>100)
+                            {
+                            echo number_format(0, 2);
+                            }
+                            else {
+                            echo number_format($shippingTotal, 2);
+                            }
+                            ?>$</span>
                         </div>
 
 
                         <div class="summary-item">
                             <span class="summary-label">Discount</span>
-                            <span class="summary-value text-danger" id="discount">$0.00</span>
+                            <span class="summary-value text-danger" id="discount"><?= number_format($_SESSION['couponTotal'],2)??number_format(0,2) ?>$</span>
                         </div>
 
                         <div class="summary-total">
                             <span>Total</span>
-                            <span class="total-price" id="cartTotal">$52.00</span>
+                            <?php 
+                            if($cartTotal>100)
+                            {
+                            $total=$cartTotal-$_SESSION['couponTotal']; 
+                            }
+                            else {
+                            $total=$cartTotal+$shippingTotal-$_SESSION['couponTotal']; 
+                            }
+                            ?>
+                            <span class="total-price" id="cartTotal"><?= number_format($total,2)??number_format(0,2) ?>$</span>
                         </div>
                         <div class="payment-methods1 mt-4">
                             <h5 class="mb-3 fw-semibold">Payment Method</h5>
 
                             <div class="payment-option1">
-                                <input type="radio" name="payment" id="card" checked>
+                                <input type="radio" name="payment" id="card" value="card" checked>
                                 <label for="card">
                                     <i class="fas fa-credit-card me-2"></i> Credit / Debit Card
                                 </label>
                             </div>
 
                             <div class="payment-option1">
-                                <input type="radio" name="payment" id="paypal">
+                                <input type="radio" name="payment" value="paypal" id="paypal">
                                 <label for="paypal">
                                     <i class="fab fa-paypal me-2"></i> PayPal
                                 </label>
                             </div>
 
                             <div class="payment-option1">
-                                <input type="radio" name="payment" id="cod">
+                                <input type="radio" name="payment" value="cod" id="cod">
                                 <label for="cod">
                                     <i class="fas fa-money-bill-wave me-2"></i> Cash on Delivery
                                 </label>
                             </div>
                         </div>
 
-                        <button class="btn-checkout">
+                        <button class="btn-checkout" id="checkoutButton">
                             <i class="fas fa-lock me-2"></i> Proceed to Checkout
                         </button>
 
@@ -969,24 +1073,27 @@ if (isset($_GET['remove'])) {
                     </div>
 
                     <!-- Shipping Calculator -->
+                    <form method="post">
                     <div class="shipping-section mt-4 fade-in">
                         <h4 class="shipping-title">Calculate Shipping</h4>
                         <p class="text-muted small mb-3">Enter your destination to get shipping estimates</p>
-
-                        <select class="form-select" id="country">
-                            <option>Select Country</option>
-                            <option value="US">United States</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="CA">Canada</option>
-                            <option value="AU">Australia</option>
+                        <select name="shipping_name" class="form-select" id="country">
+                            <?php
+                            foreach($shipping_discound as $key=>$value)
+                            {
+                                $select = '';
+                                if (isset($_SESSION['lastShippingChoise'])) {
+                                $select = ($_SESSION['lastShippingChoise'] == $key) ? 'selected' : '';
+                                }
+                                echo "<option value='$value-$key' $select>$key</option>";
+                            }
+                            ?>
                         </select>
-
-
-
-                        <button class="btn-update w-100 mt-2">
+                        <button type="submit" name="shippingButton" class="btn-update w-100 mt-2">
                             <i class="fas fa-calculator me-2"></i> Calculate Shipping
                         </button>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -1098,27 +1205,103 @@ if (isset($_GET['remove'])) {
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Initialize event listeners
-        document.addEventListener('DOMContentLoaded', function () {
-            // Quantity button listeners
-            document.querySelectorAll('.qty-increase').forEach(button => {
-                button.addEventListener('click', function () {
-                    const itemId = parseInt(this.getAttribute('data-item'));
-                    const qtyInput = document.querySelector(`.qty-input[data-item="${itemId}"]`);
-                    qtyInput.value = parseInt(qtyInput.value) + 1;
-                });
-            });
-
-            document.querySelectorAll('.qty-decrease').forEach(button => {
-                button.addEventListener('click', function () {
-                    const itemId = parseInt(this.getAttribute('data-item'));
-                    const qtyInput = document.querySelector(`.qty-input[data-item="${itemId}"]`);
-                    if (parseInt(qtyInput.value) > 1) {
-                        qtyInput.value = parseInt(qtyInput.value) - 1;
-                    }
-                });
-            });
+document.addEventListener('DOMContentLoaded', function () {
+    // Quantity button listeners
+    document.querySelectorAll('.qty-increase').forEach(button => {
+        button.addEventListener('click', function () {
+            const qtyInput = this.closest('.quantity-selector').querySelector('.qty-input');
+            qtyInput.value = parseInt(qtyInput.value) + 1;
         });
+    });
+
+    document.querySelectorAll('.qty-decrease').forEach(button => {
+        button.addEventListener('click', function () {
+            const qtyInput = this.closest('.quantity-selector').querySelector('.qty-input');
+            if (parseInt(qtyInput.value) > 1) {
+                qtyInput.value = parseInt(qtyInput.value) - 1;
+            }
+        });
+    });
+});
+
     </script>
+    <!-- hasan backend -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const btn = document.getElementById('applyCoupon');
+    if (!btn) return;
+
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const coupon = document.getElementById('couponCode').value.trim();
+        if (coupon === '') return;
+
+        fetch('cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'coupon=' + encodeURIComponent(coupon)
+        })
+        .then(res => res.text())
+        .then(discount => {
+            discount = parseFloat(discount);
+            
+            document.getElementById('discount').innerText =
+                discount > 0 ? discount.toFixed(2) + '$' : '0.00$';
+        });
+    });
+
+});
+// ------- 2 remove 
+// sho 3melet 3m t2ol eh ?? awl shi jebet kel buttonet lesm fi item-remove .. ba3den 3melet listeners
+// 3al click hynfz lfunction lsh7lta tjble mn awl div bat ela lhwe cart-item lb2lbo qty input 
+// kel qty input fi hek q[1] qty[2] .. hon 1 w 2 .. hene l id f 3melna regular 3lya l2o2dr osl ll 1 bs bala klmet qty
+// wslt ll id ? yes now b3to k get link :P 
+document.querySelectorAll('.item-remove').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.closest('.cart-item').querySelector('.qty-input').name.match(/\d+/)[0];
+        window.location.href = '?remove=' + itemId;
+    });
+});
+// to checkout 
+document.addEventListener('DOMContentLoaded', function () {
+    const checkoutBtn = document.getElementById('checkoutButton');
+    if (!checkoutBtn) return;
+
+    checkoutBtn.addEventListener('click', function () {
+        // name of payment 
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+        const cartTotal = <?= $cartTotal ?>;
+        const shippingTotal = <?= $_SESSION['shipping'] ?? 0 ?>;
+        const discountTotal = <?= $_SESSION['couponTotal'] ?? 0 ?>;
+        const cartItems = <?= json_encode($_SESSION['cart']) ?>;
+        // redirect to cart.php with content and encoding as json file 
+        fetch('cart.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'checkout=1&paymentMethod=' + encodeURIComponent(paymentMethod) +
+                '&cart=' + encodeURIComponent(JSON.stringify(cartItems)) +
+                '&cartTotal=' + cartTotal +
+                '&shippingTotal=' + shippingTotal +
+                '&discountTotal=' + discountTotal
+        })
+        // here if echo sucsessin php redirect to my account else error alert
+        .then(res => res.text())
+        .then(res => {
+            if(res === 'success'){
+                alert('Order placed successfully!');
+                window.location.href = 'checkout.php';
+            } else {
+                alert('Error placing order!');
+            }
+        });
+    });
+});
+
+</script>
     </body>
 </html>
