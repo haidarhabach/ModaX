@@ -753,30 +753,25 @@ if (isset($_GET['remove'])) {
         <div class="section-header mb-4">
             <h2 class="section-title"> Product Overview </h2>
         </div>
-        <div class="category-nav">
-            <a href="index.php" class="nav-link <?= empty($_GET['category']) ? 'active' : '' ?>">All Products</a>
-            <a href="index.php?category=women"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'women' ? 'active' : '' ?>">Women</a>
-            <a href="index.php?category=men"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'men' ? 'active' : '' ?>">Men</a>
-            <a href="index.php?category=bag"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'bag' ? 'active' : '' ?>">Bag</a>
-            <a href="index.php?category=shoes"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'shoes' ? 'active' : '' ?>">Shoes</a>
-            <a href="index.php?category=watches"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'watches' ? 'active' : '' ?>">Watches</a>
+     <div class="category-nav">
+    <a href="#" class="nav-link category-link" data-category="">All Products</a>
+    <a href="#" class="nav-link category-link" data-category="women">Women</a>
+    <a href="#" class="nav-link category-link" data-category="men">Men</a>
+    <a href="#" class="nav-link category-link" data-category="bag">Bag</a>
+    <a href="#" class="nav-link category-link" data-category="shoes">Shoes</a>
+    <a href="#" class="nav-link category-link" data-category="watches">Watches</a>
 
-            <div class="filter-toggle">
-                <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
-                    data-bs-target="#filterBox" aria-expanded="false" aria-controls="filterBox">
-                    <i class="fas fa-filter me-1"></i> Filters
-                </button>
-                <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
-                    data-bs-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
-                    <i class="fas fa-search me-1"></i> Search
-                </button>
-            </div>
-        </div>
+    <div class="filter-toggle">
+        <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
+            data-bs-target="#filterBox" aria-expanded="false" aria-controls="filterBox">
+            <i class="fas fa-filter me-1"></i> Filters
+        </button>
+        <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
+            data-bs-target="#searchBox" aria-expanded="false" aria-controls="searchBox">
+            <i class="fas fa-search me-1"></i> Search
+        </button>
+    </div>
+</div>
 
         <!-- Filter and Search Boxes Container -->
         <div class="accordion" id="filterSearchAccordion">
@@ -1243,6 +1238,43 @@ while ($row = $result->fetch_assoc()) {
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.querySelectorAll('.category-link').forEach(link => {
+
+    link.addEventListener('click', function(e){
+        e.preventDefault(); // hyda bymn3 lreload
+
+        let category = this.dataset.category;
+
+        // bihdr link msln tb3 all products
+        let url = "index.php";
+        if (category !== "") {
+            url += "?category=" + category;
+        }
+
+        // AJAX Fetch
+        fetch(url)
+        .then(response => response.text())
+        .then(data => {
+            // by2ra lsafha ljdide
+            let parser = new DOMParser();
+            let html = parser.parseFromString(data, "text/html");
+
+           //bihot litems bss
+            let newProducts = html.querySelector("#product-grid").innerHTML;
+
+         //by3ml switch m3 litems ledem
+            document.querySelector("#product-grid").innerHTML = newProducts;
+
+            //by3mla active
+            document.querySelectorAll('.category-link').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+});
+</script>
+
 </body>
 
 </html>
