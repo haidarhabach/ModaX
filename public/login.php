@@ -2,7 +2,7 @@
 
 <?php
 session_start();
-include('../includes/db.php');
+include('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
@@ -14,8 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     $password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
+if(isset($_POST['client_login'])){
+    $stmt = $connect->prepare("SELECT name,id,password_hash FROM users WHERE email = ?");
+}
+else if(isset($_POST['login_admin']))
+{
+    $stmt = $connect->prepare("SELECT username,id,password_hash FROM admins WHERE email = ?");
 
-    $stmt = $connect->prepare("SELECT id,password_hash FROM users WHERE email = ?");
+}
     $stmt->bind_param("s", $email);
     $stmt->execute();
 
@@ -28,9 +34,26 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         if (password_verify($password, $hashedPassword)) {
 
-            
-            $_SESSION['user'] = $email;
-            $_SESSION['user_id']=$row['id'];
+            if(isset($_POST['client_login']))
+            {
+              $_SESSION['user_id']=$row['id'];
+              $_SESSION['user_name'] = $row['name'];
+              if(isset($_SESSION['admin_id']))
+              {
+                unset($_SESSION['admin_id']); 
+                unset($_SESSION['admin_name']);
+              }
+            }
+            if(isset($_POST['login_admin']))
+            {
+              $_SESSION['admin_id']= $row['id'] ;
+              $_SESSION['admin_name']= $row['username'] ;
+              if(isset($_SESSION['user_id']))
+              {
+                unset($_SESSION['user_id']); 
+                unset($_SESSION['user_name']);
+              }
+            }
             header("Location: index.php");
             exit();
 
@@ -364,7 +387,7 @@ button {
                     <i class="zmdi zmdi-lock"></i>
                 </div>
                 
-                <button type="submit">Login <i class="zmdi zmdi-arrow-right"></i></button>
+                <button type="submit" name="client_login" >Login as Customer <i class="zmdi zmdi-arrow-right"></i></button>
                 <button type="submit" name="login_admin" class="btn-admin">
                         <i class="zmdi zmdi-arrow-right"></i> Login as Admin
                     </button>
