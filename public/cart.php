@@ -1019,17 +1019,19 @@ $shippingTotal = $_SESSION['shipping'] ?? 0.00;
 
                         <div class="summary-item">
                             <span class="summary-label">Discount</span>
-                            <span class="summary-value text-danger" id="discount"><?= number_format($_SESSION['couponTotal'],2)??number_format(0,2) ?>$</span>
+                            <span class="summary-value text-danger" id="discount"><?= isset($_SESSION['couponTotal'])?number_format($_SESSION['couponTotal'],2):number_format(0,2) ?>$</span>
                         </div>
 
                         <div class="summary-total">
                             <span>Total</span>
                             <?php 
-                            if($cartTotal>100)
+                            if($cartTotal>100 )
                             {
+                        if(isset($_SESSION['couponTotal']))
                             $total=$cartTotal-$_SESSION['couponTotal']; 
                             }
                             else {
+                        if(isset($_SESSION['couponTotal']))        
                             $total=$cartTotal+$shippingTotal-$_SESSION['couponTotal']; 
                             }
                             ?>
@@ -1294,7 +1296,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(res => {
             if(res === 'success'){
                 alert('Order placed successfully!');
-                window.location.href = 'checkout.php';
+                window.location.href = 'myAccount.php';
             } else {
                 alert('Error placing order!');
             }
