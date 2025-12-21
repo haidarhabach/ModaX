@@ -7,15 +7,18 @@ if (!isset($_SESSION['user_id'])) {
 }
 include 'db.php';
 $coupon_cart = ["hasan"=>20 , "haidar"=>20 , "hammoud"=>10,"abdallah"=>5];
+$_SESSION['active_coupns']=count($coupon_cart);
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
 
-    $cart = json_decode($_POST['cart'], true); // to get by name !!
+    $cartss = json_decode($_POST['cart'], true); // to get by name whe use the true !!
     
-    if(empty($cart))
+    if(empty($cartss))
     {
         echo "error";
         exit;
     }
+
+
 
     $cartTotal = (float) $_POST['cartTotal'];
     
@@ -29,15 +32,18 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     
     $total = ($cartTotal > 100 ? $cartTotal : $cartTotal + $shippingTotal) - $discountTotal;
 
-    $stmt = $connect->prepare("INSERT INTO orders (user_id,total,shipping_address, shipping, discount, payment_method, created_at) VALUES (? , ?,?, ?, ?, ?, NOW())");
+    $stmt = $connect->prepare("INSERT INTO orders (status,user_id,total,shipping_address, shipping, discount, payment_method, created_at) VALUES ('Processing',? , ?,?, ?, ?, ?, NOW())");
     $stmt->bind_param("idsdds",$_SESSION['user_id'],$total,$shipping_country, $shippingTotal, $discountTotal, $paymentMethod);
     $stmt->execute();
     $order_id = $stmt->insert_id;
     $stmt->close();
     // save order item to see the status 
-    foreach($cart as $item){
-        $stmt = $connect->prepare("INSERT INTO order_items (order_id, product_id, quantity, product_name, price) VALUES (? ,?, ?, ?, ?)");
-        $stmt->bind_param("iiisd", $order_id, $item['id'], $item['qty'],$item['name'], $item['price']);
+    foreach($cartss as $item){
+
+    $size = $item['size'];
+    $color= $item['color'];
+        $stmt = $connect->prepare("INSERT INTO order_items (size,color,order_id, product_id, quantity, product_name, price) VALUES (?, ?, ? ,?, ?, ?, ?)");
+        $stmt->bind_param("ssiiisd",$size,$color, $order_id, $item['id'], $item['qty'],$item['name'], $item['price']);
         $stmt->execute();
         $stmt->close();
     }
