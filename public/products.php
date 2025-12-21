@@ -788,9 +788,10 @@ if (!empty($_GET['sort'])) {
 //hammoud
 if(isset($_GET['search'])){
     $search="%". $_GET['search'] ."%";
-    $query="select p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
+    $query="select p.id,p.category_id,p.price,p.name,filename,p.type from products as p,product_images as i,categories as c
 where  p.id = i.product_id AND c.id= p.category_id
-and (p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ? OR p.type LIKE ?)";
+and (p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ? OR p.type LIKE ?)
+GROUP BY p.id";
 $stmt=$connect->prepare($query);
 $stmt->bind_param("ssss",$search,$search,$search,$search);
 $stmt->execute();
