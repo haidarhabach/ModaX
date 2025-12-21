@@ -2,399 +2,398 @@
 
 <head>
     <?php
-session_start();
-include 'db.php';
-// $_SESSION['cart'][] = [
-//   'id' => 1,
-//   'name' => 'White Shirt Pleat',
-//   'price' => 19.00,
-//   'qty' => 1,
-//   'image' => 'assets/images/item-cart-01.jpg'
-//  ];
+    session_start();
+    include '../includes/db.php';
+    // $_SESSION['cart'][] = [
+    //   'id' => 1,
+    //   'name' => 'White Shirt Pleat',
+    //   'price' => 19.00,
+    //   'qty' => 1,
+    //   'image' => 'assets/images/item-cart-01.jpg'
+    //  ];
 
-if (isset($_GET['remove'])) {
-    $remove_id = $_GET['remove'];
-    foreach ($_SESSION['cart'] as $index => $item) {
-        if ($item['id'] == $remove_id) {
-            unset($_SESSION['cart'][$index]);
+    if (isset($_GET['remove'])) {
+        $remove_id = $_GET['remove'];
+        foreach ($_SESSION['cart'] as $index => $item) {
+            if ($item['id'] == $remove_id) {
+                unset($_SESSION['cart'][$index]);
+            }
         }
+        $_SESSION['cart'] = array_values($_SESSION['cart']);
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     }
-    $_SESSION['cart'] = array_values($_SESSION['cart']);
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
-}
-?>
+    ?>
 
-<head>
-    <title>Products</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
+    <head>
+        <title>Products</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <style>
-        
-        .category-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .category-nav .nav-link {
-            font-weight: 600;
-            padding: 0.5rem 0;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-            color: #666;
-        }
-
-        .category-nav .nav-link.active,
-        .category-nav .nav-link:hover {
-            color: #0d6efd;
-            border-bottom-color: #0d6efd;
-        }
-
-        .filter-box,
-        .search-box {
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border: none;
-            overflow: hidden;
-        }
-
-        .filter-header,
-        .search-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 1rem 1.25rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .filter-body,
-        .search-body {
-            padding: 1.5rem;
-        }
-
-        .filter-actions {
-            border-top: 1px solid #e9ecef;
-            padding: 1rem 1.5rem;
-            background-color: #f8f9fa;
-        }
-
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        .form-select,
-        .form-control {
-            border-radius: 6px;
-            padding: 0.625rem 0.75rem;
-            border: 1px solid #ced4da;
-            transition: all 0.2s ease;
-        }
-
-        .form-select:focus,
-        .form-control:focus {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-        }
-
-        .btn-filter {
-            padding: 0.625rem 1.5rem;
-            font-weight: 600;
-            border-radius: 6px;
-        }
-
-        .search-btn {
-            padding: 0.625rem 1.5rem;
-            font-weight: 600;
-            border-radius: 6px;
-        }
-
-        .filter-toggle {
-            display: flex;
-            gap: 0.75rem;
-            margin-left: auto;
-        }
-
-        /* Active state for toggle buttons */
-        .btn-toggle.active {
-            background-color: #0d6efd;
-            color: white;
-            border-color: #0d6efd;
-        }
-
-        @media (max-width: 768px) {
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="assets/css/main.css">
+        <style>
             .category-nav {
-                gap: 1rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            }
+
+            .category-nav .nav-link {
+                font-weight: 600;
+                padding: 0.5rem 0;
+                border-bottom: 2px solid transparent;
+                transition: all 0.3s ease;
+                color: #666;
+            }
+
+            .category-nav .nav-link.active,
+            .category-nav .nav-link:hover {
+                color: #0d6efd;
+                border-bottom-color: #0d6efd;
+            }
+
+            .filter-box,
+            .search-box {
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                border: none;
+                overflow: hidden;
+            }
+
+            .filter-header,
+            .search-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+                padding: 1rem 1.25rem;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .filter-body,
+            .search-body {
+                padding: 1.5rem;
+            }
+
+            .filter-actions {
+                border-top: 1px solid #e9ecef;
+                padding: 1rem 1.5rem;
+                background-color: #f8f9fa;
+            }
+
+            .form-label {
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                color: #333;
+            }
+
+            .form-select,
+            .form-control {
+                border-radius: 6px;
+                padding: 0.625rem 0.75rem;
+                border: 1px solid #ced4da;
+                transition: all 0.2s ease;
+            }
+
+            .form-select:focus,
+            .form-control:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            }
+
+            .btn-filter {
+                padding: 0.625rem 1.5rem;
+                font-weight: 600;
+                border-radius: 6px;
+            }
+
+            .search-btn {
+                padding: 0.625rem 1.5rem;
+                font-weight: 600;
+                border-radius: 6px;
             }
 
             .filter-toggle {
-                margin-left: 0;
-                margin-top: 1rem;
-                width: 100%;
-                justify-content: flex-end;
-            }
-        }
-
-        .product-grid {
-            padding: 50px 0;
-        }
-        
-        .product-item {
-            margin-bottom: 30px;
-        }
-        
-        .product-card {
-            border: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .product-card:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .product-image {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .product-image img {
-            width: 100%;
-            height: auto;
-            transition: transform 0.5s ease;
-        }
-        
-        .product-card:hover .product-image img {
-            transform: scale(1.05);
-        }
-        
-        .quick-view-btn {
-            position: absolute;
-            bottom: -50px;
-            left: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            transition: bottom 0.3s ease;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .product-card:hover .quick-view-btn {
-            bottom: 0;
-        }
-        
-        .product-info {
-            padding: 15px 0;
-        }
-        
-        .product-name {
-            font-size: 16px;
-            color: var(--text-color);
-            text-decoration: none;
-            margin-bottom: 5px;
-            display: block;
-            transition: color 0.3s ease;
-        }
-        
-        .product-name:hover {
-            color: var(--primary-color);
-        }
-        
-        .product-price {
-            font-size: 18px;
-            font-weight: 500;
-            color: var(--primary-color);
-        }
-        
-        .wishlist-btn {
-            background: none;
-            border: none;
-            color: #ccc;
-            font-size: 18px;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-        
-        .wishlist-btn:hover {
-            color: #ff4d4d;
-        }
-        
-        .wishlist-btn.active {
-            color: #ff4d4d;
-        }
-        
-        .footer {
-            background-color: rgba(0, 0, 0, 0.8);
-            color: var(--text-light);
-            padding: 75px 0 32px;
-        }
-
-        .footer h4 {
-            color: white;
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-
-        .footer ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer ul li {
-            padding-bottom: 10px;
-        }
-
-        .footer a {
-            color: #999;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: #0d6efd;
-        }
-
-        .footer p {
-            color: #999;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
-        .social-icons a {
-            display: inline-block;
-            font-size: 18px;
-            margin-right: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            transform: translateY(-3px);
-        }
-
-        .newsletter-form .form-control {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #999;
-            border-radius: 0;
-            color: #999;
-            padding: 8px 0;
-            margin-bottom: 20px;
-        }
-
-        .newsletter-form .form-control:focus {
-            box-shadow: none;
-            border-bottom-color: #999;
-        }
-
-        .newsletter-form .form-control::placeholder {
-            color: var(--text-lighter);
-        }
-
-        .subscribe-btn {
-            background-color: #0d6efd;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 2px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .subscribe-btn:hover {
-            background-color: white;
-            color: #0d6efd;
-            transform: translateY(-2px);
-        }
-
-        .payment-methods {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 18px;
-        }
-
-        .payment-methods a {
-            margin: 0 8px;
-            display: inline-block;
-        }
-
-        .payment-icon {
-            width: 50px;
-            height: 30px;
-            background-color: #333;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background-color: #0d6efd;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .back-to-top.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .back-to-top:hover {
-            background-color: white;
-            color: #0d6efd;
-            transform: translateY(-3px);
-        }
-
-        @media (max-width: 768px) {
-            .footer {
-                padding: 50px 0 20px;
+                display: flex;
+                gap: 0.75rem;
+                margin-left: auto;
             }
 
-            .footer .col-sm-6 {
+            /* Active state for toggle buttons */
+            .btn-toggle.active {
+                background-color: #0d6efd;
+                color: white;
+                border-color: #0d6efd;
+            }
+
+            @media (max-width: 768px) {
+                .category-nav {
+                    gap: 1rem;
+                }
+
+                .filter-toggle {
+                    margin-left: 0;
+                    margin-top: 1rem;
+                    width: 100%;
+                    justify-content: flex-end;
+                }
+            }
+
+            .product-grid {
+                padding: 50px 0;
+            }
+
+            .product-item {
                 margin-bottom: 30px;
             }
-        }
-    </style>
-</head>
+
+            .product-card {
+                border: none;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .product-card:hover {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            .product-image {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .product-image img {
+                width: 100%;
+                height: auto;
+                transition: transform 0.5s ease;
+            }
+
+            .product-card:hover .product-image img {
+                transform: scale(1.05);
+            }
+
+            .quick-view-btn {
+                position: absolute;
+                bottom: -50px;
+                left: 0;
+                right: 0;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                text-align: center;
+                padding: 10px;
+                transition: bottom 0.3s ease;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .product-card:hover .quick-view-btn {
+                bottom: 0;
+            }
+
+            .product-info {
+                padding: 15px 0;
+            }
+
+            .product-name {
+                font-size: 16px;
+                color: var(--text-color);
+                text-decoration: none;
+                margin-bottom: 5px;
+                display: block;
+                transition: color 0.3s ease;
+            }
+
+            .product-name:hover {
+                color: var(--primary-color);
+            }
+
+            .product-price {
+                font-size: 18px;
+                font-weight: 500;
+                color: var(--primary-color);
+            }
+
+            .wishlist-btn {
+                background: none;
+                border: none;
+                color: #ccc;
+                font-size: 18px;
+                transition: color 0.3s ease;
+                position: relative;
+            }
+
+            .wishlist-btn:hover {
+                color: #ff4d4d;
+            }
+
+            .wishlist-btn.active {
+                color: #ff4d4d;
+            }
+
+            .footer {
+                background-color: rgba(0, 0, 0, 0.8);
+                color: var(--text-light);
+                padding: 75px 0 32px;
+            }
+
+            .footer h4 {
+                color: white;
+                font-size: 18px;
+                font-weight: 500;
+                margin-bottom: 30px;
+            }
+
+            .footer ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .footer ul li {
+                padding-bottom: 10px;
+            }
+
+            .footer a {
+                color: #999;
+                text-decoration: none;
+                font-size: 14px;
+                transition: all 0.3s ease;
+            }
+
+            .footer a:hover {
+                color: #0d6efd;
+            }
+
+            .footer p {
+                color: #999;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+
+            .social-icons a {
+                display: inline-block;
+                font-size: 18px;
+                margin-right: 16px;
+                transition: all 0.3s ease;
+            }
+
+            .social-icons a:hover {
+                transform: translateY(-3px);
+            }
+
+            .newsletter-form .form-control {
+                background: transparent;
+                border: none;
+                border-bottom: 1px solid #999;
+                border-radius: 0;
+                color: #999;
+                padding: 8px 0;
+                margin-bottom: 20px;
+            }
+
+            .newsletter-form .form-control:focus {
+                box-shadow: none;
+                border-bottom-color: #999;
+            }
+
+            .newsletter-form .form-control::placeholder {
+                color: var(--text-lighter);
+            }
+
+            .subscribe-btn {
+                background-color: #0d6efd;
+                color: white;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 2px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .subscribe-btn:hover {
+                background-color: white;
+                color: #0d6efd;
+                transform: translateY(-2px);
+            }
+
+            .payment-methods {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-bottom: 18px;
+            }
+
+            .payment-methods a {
+                margin: 0 8px;
+                display: inline-block;
+            }
+
+            .payment-icon {
+                width: 50px;
+                height: 30px;
+                background-color: #333;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+
+            .back-to-top {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+                background-color: #0d6efd;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1000;
+            }
+
+            .back-to-top.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-top:hover {
+                background-color: white;
+                color: #0d6efd;
+                transform: translateY(-3px);
+            }
+
+            @media (max-width: 768px) {
+                .footer {
+                    padding: 50px 0 20px;
+                }
+
+                .footer .col-sm-6 {
+                    margin-bottom: 30px;
+                }
+            }
+        </style>
+    </head>
 
 <body>
 
-     <!--top Promo bar-->
+    <!--top Promo bar-->
     <div class="top-promo-bar">
         <div class="container">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
@@ -513,7 +512,7 @@ if (isset($_GET['remove'])) {
                         foreach ($_SESSION['cart'] as $item):
                             $itemTotal = $item['price'] * $item['qty'];
                             $total += $itemTotal;
-                            ?>
+                    ?>
 
                             <li class="list-group-item border-0">
                                 <div class="row align-items-center g-3">
@@ -537,7 +536,8 @@ if (isset($_GET['remove'])) {
                                 </div>
                             </li>
 
-                        <?php endforeach; else: ?>
+                        <?php endforeach;
+                    else: ?>
 
                         <li class="list-group-item text-center py-4">
                             <em>Your cart is empty</em>
@@ -562,23 +562,19 @@ if (isset($_GET['remove'])) {
             </div>
         </div>
     </div>
-<section class="container my-5">
+    <section class="container my-5">
         <!--Category navigation-->
         <div class="section-header mb-4">
             <h2 class="section-title"> Product Overview </h2>
         </div>
+
         <div class="category-nav">
-            <a href="index.php" class="nav-link <?= empty($_GET['category']) ? 'active' : '' ?>">All Products</a>
-            <a href="index.php?category=women"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'women' ? 'active' : '' ?>">Women</a>
-            <a href="index.php?category=men"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'men' ? 'active' : '' ?>">Men</a>
-            <a href="index.php?category=bag"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'bag' ? 'active' : '' ?>">Bag</a>
-            <a href="index.php?category=shoes"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'shoes' ? 'active' : '' ?>">Shoes</a>
-            <a href="index.php?category=watches"
-                class="nav-link <?= ($_GET['category'] ?? '') === 'watches' ? 'active' : '' ?>">Watches</a>
+            <a href="#" class="nav-link category-link" data-category="">All Products</a>
+            <a href="#" class="nav-link category-link" data-category="women">Women</a>
+            <a href="#" class="nav-link category-link" data-category="men">Men</a>
+            <a href="#" class="nav-link category-link" data-category="bag">Bag</a>
+            <a href="#" class="nav-link category-link" data-category="shoes">Shoes</a>
+            <a href="#" class="nav-link category-link" data-category="watches">Watches</a>
 
             <div class="filter-toggle">
                 <button class="btn btn-outline-secondary btn-sm btn-toggle" data-bs-toggle="collapse"
@@ -591,6 +587,7 @@ if (isset($_GET['remove'])) {
                 </button>
             </div>
         </div>
+        
 
         <!-- Filter and Search Boxes Container -->
         <div class="accordion" id="filterSearchAccordion">
@@ -695,7 +692,7 @@ if (isset($_GET['remove'])) {
                         <?php if (!empty($_GET['category'])): ?>
                             <input type="hidden" name="category" value="<?= $_GET['category'] ?>">
                         <?php endif; ?>
-<!-- todo Hasan -->
+                        <!-- todo Hasan -->
                         <div class="row align-items-end">
                             <div class="col-md-9">
                                 <label class="form-label">Search products</label>
@@ -717,125 +714,124 @@ if (isset($_GET['remove'])) {
 
     <section class="product-grid">
         <div class="container">
-<div class="row" id="product-grid">
-<?php
-$query = "select p.id,p.category_id,p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
+            <div class="row" id="product-grid">
+                <?php
+                $query = "select p.id,p.category_id,p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
 where  p.id = i.product_id AND c.id= p.category_id";
 
-// -- price --
-if (!empty($_GET['price'])) {
-    switch($_GET['price']) {
-        case '0-50':
-            $query .= " AND p.price BETWEEN 0 AND 50";
-            break;
-        case '50-100':
-            $query .= " AND p.price BETWEEN 50 AND 100";
-            break;
-        case '100-150':
-            $query .= " AND p.price BETWEEN 100 AND 150";
-            break;
-        case '150-200':
-            $query .= " AND p.price BETWEEN 150 AND 200";
-            break;
-        case '200':
-            $query .= " AND p.price >= 200";
-            break;
-    }
-}
+                // -- price --
+                if (!empty($_GET['price'])) {
+                    switch ($_GET['price']) {
+                        case '0-50':
+                            $query .= " AND p.price BETWEEN 0 AND 50";
+                            break;
+                        case '50-100':
+                            $query .= " AND p.price BETWEEN 50 AND 100";
+                            break;
+                        case '100-150':
+                            $query .= " AND p.price BETWEEN 100 AND 150";
+                            break;
+                        case '150-200':
+                            $query .= " AND p.price BETWEEN 150 AND 200";
+                            break;
+                        case '200':
+                            $query .= " AND p.price >= 200";
+                            break;
+                    }
+                }
 
-// --- color ----
-if (!empty($_GET['color'])) {
-    $color = $_GET['color'];
-    $query .= " AND p.color = '$color'";
-}
-//abdallah
-if(isset($_GET['category']) && $_GET['category'] =="women"){
-    $query.= " AND p.type = 'women'";}
-    else if(isset($_GET['category']) && $_GET['category'] =="men"){
-    $query.= " AND p.type = 'men'";}
-    else if(isset($_GET['category']) && $_GET['category'] =="bag"){
-    $query.= " AND p.type = 'bag'";}
-    else if(isset($_GET['category']) && $_GET['category'] =="shoes"){
-    $query.= " AND p.type = 'shoes'";}
-    else if(isset($_GET['category']) && $_GET['category'] =="watches"){
-    $query.= " AND p.type = 'watches'";}
-// --- tag  ---
-if (!empty($_GET['tag'])) {
-    $tag = $_GET['tag'];
-    $query .= " AND c.tag = '$tag'";
-}
+                // --- color ----
+                if (!empty($_GET['color'])) {
+                    $color = $_GET['color'];
+                    $query .= " AND p.color = '$color'";
+                }
+                //abdallah
+                if (isset($_GET['category']) && $_GET['category'] == "women") {
+                    $query .= " AND p.type = 'women'";
+                } else if (isset($_GET['category']) && $_GET['category'] == "men") {
+                    $query .= " AND p.type = 'men'";
+                } else if (isset($_GET['category']) && $_GET['category'] == "bag") {
+                    $query .= " AND p.type = 'bag'";
+                } else if (isset($_GET['category']) && $_GET['category'] == "shoes") {
+                    $query .= " AND p.type = 'shoes'";
+                } else if (isset($_GET['category']) && $_GET['category'] == "watches") {
+                    $query .= " AND p.type = 'watches'";
+                }
+                // --- tag  ---
+                if (!empty($_GET['tag'])) {
+                    $tag = $_GET['tag'];
+                    $query .= " AND c.tag = '$tag'";
+                }
 
-// ----- sort -----
-if (!empty($_GET['sort'])) {
-    switch($_GET['sort']) {
-        case 'price_asc':
-            $query .= " ORDER BY p.price ASC";
-            break;
-        case 'price_desc':
-            $query .= " ORDER BY p.price DESC";
-            break;
-        case 'newness':
-            $query .= " ORDER BY p.created_at DESC";
-            break;
-        case 'popularity':
-            $query .= " ORDER BY p.popularity DESC"; 
-        default:
-            $query .= " ORDER BY p.id ASC";
-    }
-} else {
-    $query .= " ORDER BY p.id ASC"; // default sorting
-}
-//hammoud
-if(isset($_GET['search'])){
-    $search="%". $_GET['search'] ."%";
-    $query="select p.id,p.category_id,p.price,p.name,filename,p.type from products as p,product_images as i,categories as c
+                // ----- sort -----
+                if (!empty($_GET['sort'])) {
+                    switch ($_GET['sort']) {
+                        case 'price_asc':
+                            $query .= " ORDER BY p.price ASC";
+                            break;
+                        case 'price_desc':
+                            $query .= " ORDER BY p.price DESC";
+                            break;
+                        case 'newness':
+                            $query .= " ORDER BY p.created_at DESC";
+                            break;
+                        case 'popularity':
+                            $query .= " ORDER BY p.popularity DESC";
+                        default:
+                            $query .= " ORDER BY p.id ASC";
+                    }
+                } else {
+                    $query .= " ORDER BY p.id ASC"; // default sorting
+                }
+                //hammoud
+                if (isset($_GET['search'])) {
+                    $search = "%" . $_GET['search'] . "%";
+                    $query = "select p.id,p.category_id,p.price,p.name,filename,p.type from products as p,product_images as i,categories as c
 where  p.id = i.product_id AND c.id= p.category_id
 and (p.name LIKE ? OR c.name LIKE ? OR p.description LIKE ? OR p.type LIKE ?)
 GROUP BY p.id";
-$stmt=$connect->prepare($query);
-$stmt->bind_param("ssss",$search,$search,$search,$search);
-$stmt->execute();
-    
-}
-else{
-    $stmt = $connect->prepare($query);
-$stmt->execute();
-}
+                    $stmt = $connect->prepare($query);
+                    $stmt->bind_param("ssss", $search, $search, $search, $search);
+                    $stmt->execute();
+                } else {
+                    $stmt = $connect->prepare($query);
+                    $stmt->execute();
+                }
 
-// the query code < old one >
-$result = $stmt->get_result();
-?>
-            
-            
-<div class="row" id="product-grid">
-<?php
-while ($row = $result->fetch_assoc()) {
-    ?>
-    <div class="col-sm-6 col-md-4 col-lg-3 product-item <?= $row['type'] ?>">
-        <div class="product-card">
-            <div class="product-image">
-                <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
-                <a href="product.php?name=<?= $row['name'] ?>&price=
+                // the query code < old one >
+                $result = $stmt->get_result();
+                ?>
+
+
+                <div class="row" id="product-grid">
+                    <?php
+                    while ($row = $result->fetch_assoc()) {
+                    ?>
+                        <div class="col-sm-6 col-md-4 col-lg-3 product-item <?= $row['type'] ?>">
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
+                                    <a href="product.php?name=<?= $row['name'] ?>&price=
                 <?= $row['price'] ?>&photo=<?= $row['filename'] ?>&type=<?= $row['type'] ?>
                 &id=<?= $row['id'] ?> &category=<?= $row['category_id'] ?>" class="quick-view-btn">Quick View</a>
-            </div>
-            <div class="product-info d-flex justify-content-between align-items-start">
-                <div>
-                    <a href="#" class="product-name"><?= $row['name'] ?></a>
-                    <div class="product-price"><?= $row['price'] ?>$</div>
+                                </div>
+                                <div class="product-info d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <a href="#" class="product-name"><?= $row['name'] ?></a>
+                                        <div class="product-price"><?= $row['price'] ?>$</div>
+                                    </div>
+                                    <button class="wishlist-btn">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php
+                    }
+                    ?>
                 </div>
-                <button class="wishlist-btn">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-<?php
-}
-?>
-</div>
     </section>
-<!-- Footer -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row">
@@ -940,7 +936,7 @@ while ($row = $result->fetch_assoc()) {
 
     <script>
         // Update the cart icon in the navigation header
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const cartIcon = document.querySelector('.icon-container a');
             if (cartIcon) {
                 cartIcon.setAttribute('data-bs-toggle', 'offcanvas');
@@ -952,7 +948,7 @@ while ($row = $result->fetch_assoc()) {
             const filterButtons = document.querySelectorAll('.btn-toggle');
 
             filterButtons.forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     // Remove active class from all buttons
                     filterButtons.forEach(btn => {
                         btn.classList.remove('active');
@@ -969,24 +965,24 @@ while ($row = $result->fetch_assoc()) {
             const filterBtn = document.querySelector('[data-bs-target="#filterBox"]');
             const searchBtn = document.querySelector('[data-bs-target="#searchBox"]');
 
-            filterBox.addEventListener('show.bs.collapse', function () {
+            filterBox.addEventListener('show.bs.collapse', function() {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 filterBtn.classList.add('active');
             });
 
-            searchBox.addEventListener('show.bs.collapse', function () {
+            searchBox.addEventListener('show.bs.collapse', function() {
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 searchBtn.classList.add('active');
             });
 
             // Handle when both are closed
-            filterBox.addEventListener('hidden.bs.collapse', function () {
+            filterBox.addEventListener('hidden.bs.collapse', function() {
                 if (!searchBox.classList.contains('show')) {
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                 }
             });
 
-            searchBox.addEventListener('hidden.bs.collapse', function () {
+            searchBox.addEventListener('hidden.bs.collapse', function() {
                 if (!filterBox.classList.contains('show')) {
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                 }
@@ -994,7 +990,7 @@ while ($row = $result->fetch_assoc()) {
         });
 
         // Initialize carousel with custom settings
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const carousel = new bootstrap.Carousel('#heroCarousel', {
                 interval: 5000, // 5 seconds
                 pause: 'hover',
@@ -1003,7 +999,7 @@ while ($row = $result->fetch_assoc()) {
             });
 
             // Reset animations when slide changes
-            document.getElementById('heroCarousel').addEventListener('slide.bs.carousel', function () {
+            document.getElementById('heroCarousel').addEventListener('slide.bs.carousel', function() {
                 const activeSlide = this.querySelector('.carousel-item.active');
                 const animatedElements = activeSlide.querySelectorAll('.animated');
 
@@ -1017,7 +1013,7 @@ while ($row = $result->fetch_assoc()) {
 
         const backToTopButton = document.getElementById('backToTop');
 
-        window.addEventListener('scroll', function () {
+        window.addEventListener('scroll', function() {
             if (window.pageYOffset > 300) {
                 backToTopButton.classList.add('show');
             } else {
@@ -1025,7 +1021,7 @@ while ($row = $result->fetch_assoc()) {
             }
         });
 
-        backToTopButton.addEventListener('click', function () {
+        backToTopButton.addEventListener('click', function() {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -1035,7 +1031,43 @@ while ($row = $result->fetch_assoc()) {
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.category-link').forEach(link => {
+
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); // hyda bymn3 lreload
+
+                let category = this.dataset.category;
+
+                // bihdr link msln tb3 all products
+                let url = "index.php";
+                if (category !== "") {
+                    url += "?category=" + category;
+                }
+
+                // AJAX Fetch
+                fetch(url)
+                    .then(response => response.text())
+                    .then(data => {
+                        // by2ra lsafha ljdide
+                        let parser = new DOMParser();
+                        let html = parser.parseFromString(data, "text/html");
+
+                        //bihot litems bss
+                        let newProducts = html.querySelector("#product-grid").innerHTML;
+
+                        //by3ml switch m3 litems ledem
+                        document.querySelector("#product-grid").innerHTML = newProducts;
+
+                        //by3mla active
+                        document.querySelectorAll('.category-link').forEach(el => el.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+            });
+
+        });
+    </script>
+
 </body>
 
 </html>
-
