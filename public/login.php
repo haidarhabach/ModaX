@@ -2,7 +2,7 @@
 
 <?php
 session_start();
-include('db.php');
+include('../includes/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
@@ -365,6 +365,9 @@ button {
                 </div>
                 
                 <button type="submit">Login <i class="zmdi zmdi-arrow-right"></i></button>
+                <button type="submit" name="login_admin" class="btn-admin">
+                        <i class="zmdi zmdi-arrow-right"></i> Login as Admin
+                    </button>
                 
                 <!-- Register link -->
                 <div class="register-link">
@@ -376,4 +379,3 @@ button {
 </body>
 
 </html>
-
