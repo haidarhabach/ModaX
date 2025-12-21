@@ -1,3 +1,91 @@
+<?php
+session_start();
+include 'db.php';
+// function that update the status after 3 day to delivery
+// backend hasan 21/12 
+// what is INTERVAL 3 DAY ? hay frdn lyom 21/12 btn2s 3 eyem mn date ya3ne bsir 18/12 .. 
+
+
+if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['updateProfile'])) {
+
+    $password = trim($_POST['password']);
+    $confirm  = trim($_POST['confirmPassword']);
+    $userID = $_SESSION['user_id'];
+
+    if (empty($password) && empty($confirm)) {
+        
+    // do  nothing :)
+    }
+    elseif ($password !== $confirm) {
+        header("Location: myAccount.php?section=profile&errorConfirm=1");
+        exit;
+    }
+    else {
+        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $connect->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+        $stmt->bind_param("si", $password_hashed, $userID);
+        $stmt->execute();
+        $stmt->close();
+
+        header("Location: myAccount.php?section=profile&success=1");
+    }
+    // i edit this after time because that its like like this 
+    if(isset($_POST['FN']) ||  isset($_POST['LN']) || isset($_POST['email']) || isset($_POST['phone']) || isset($_POST['address'])){
+    // ['FN',LN,email,phone,address]
+    $name = $_POST['FN']." ".$_POST['LN'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
+
+    $stmt=$connect->prepare("UPDATE users SET name=? , email=? , phone= ? where id = ?");
+    $stmt->bind_param("sssi",$name,$email,$phone,$userID);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt=$connect->prepare("UPDATE orders set shipping_address= ? where user_id = ?");
+    $stmt->bind_param("si",$address,$userID);
+        $stmt->execute();
+        $stmt->close();
+    header("Location: myAccount.php?section=profile&success=1");
+    }
+}
+
+
+
+
+function updateOrdersStatusAfter3Days($connect) {
+    $stmt = $connect->prepare("
+        UPDATE orders 
+        SET status = 'shipped' 
+        WHERE status = 'processing' 
+        AND created_at <= NOW() - INTERVAL 3 DAY
+    ");
+    
+    $stmt->execute();
+    $stmt->close();
+}
+
+updateOrdersStatusAfter3Days($connect);
+if(!isset($_SESSION['user_id']))
+{
+    header("Location:login.php");
+}
+// first for total products 
+$userID=$_SESSION['user_id'];
+$stmt=$connect->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ?");
+$stmt->bind_param("i",$userID);
+$stmt->execute();
+$stmt->bind_result($orders_result);
+$stmt->fetch();
+$stmt->close();
+// second get the full price 
+$stmt=$connect->prepare("SELECT SUM(total) FROM orders WHERE user_id = ?");
+$stmt->bind_param("i",$userID);
+$stmt->execute();
+$stmt->bind_result($total_orders);
+$stmt->fetch();
+$stmt->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -974,10 +1062,11 @@
                                     <i class="fas fa-home"></i>
                                     <span>Dashboard</span>
                                 </button>
-                                <button class="menu-button" data-section="profile">
+                                <button class="menu-button" id="profile" data-section="profile">
                                     <i class="fas fa-user"></i>
                                     <span>My Profile</span>
                                 </button>
+                                
                                 <button class="menu-button" data-section="orders">
                                     <i class="fas fa-shopping-bag"></i>
                                     <span>My Orders</span>
@@ -1006,7 +1095,7 @@
                                     <div class="stat-icon">
                                         <i class="fas fa-shopping-bag"></i>
                                     </div>
-                                    <div class="stat-number">15</div>
+                                    <div class="stat-number"><?= $orders_result??0 ?></div>
                                     <div class="stat-label">Total Orders</div>
                                 </div>
                             </div>
@@ -1016,7 +1105,7 @@
                                     <div class="stat-icon">
                                         <i class="fas fa-ticket-alt"></i>
                                     </div>
-                                    <div class="stat-number">5</div>
+                                    <div class="stat-number"><?= $_SESSION['active_coupns']??0 ?></div>
                                     <div class="stat-label">Active Coupons</div>
                                 </div>
                             </div>
@@ -1036,7 +1125,7 @@
                                     <div class="stat-icon">
                                         <i class="fas fa-dollar"></i>
                                     </div>
-                                    <div class="stat-number">154</div>
+                                    <div class="stat-number"><?= round($total_orders)??0 ?></div>
                                     <div class="stat-label">Total Spent</div>
                                 </div>
                             </div>
@@ -1060,51 +1149,49 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php
+                                        // le e msh d ??? l e heye d bs bala 0 y3ne 03 => 3 M mshen e5d esm shher December for example ..
+                                        $stmt = $connect->prepare("
+                                            SELECT 
+                                                o.id AS order_id,
+                                                a.product_name,
+                                                a.size,
+                                                a.color,
+                                                DATE_FORMAT(o.created_at, '%M %e, %Y') AS order_date,
+                                                
+                                                (a.price * a.quantity) AS total,
+                                                o.status
+                                            FROM order_items AS a
+                                            JOIN orders AS o ON o.id = a.order_id
+                                            WHERE o.user_id = ?
+                                            ORDER BY o.created_at DESC
+                                        ");
+                                        $stmt->bind_param("i", $_SESSION['user_id']);
+                                        $stmt->execute();
+                                        $result=$stmt->get_result();
+                                        $i=0;
+                                        while($row=$result->fetch_assoc())
+                                        {
+                                            if($i>=6)
+                                            {
+                                                break;
+                                            }
+                                        ?>
                                         <tr>
-                                            <td class="order-id">#ST2456</td>
-                                            <td><strong>Premium Denim Jacket</strong></td>
-                                            <td>M</td>
-                                            <td>Blue</td>
-                                            <td>March 2, 2023</td>
-                                            <td>$89.99</td>
-                                            <td><span class="status-badge status-delivered">Delivered</span></td>
+                                            <td class="order-id">#ST<?= $row['order_id'] ?></td>
+                                            <td><strong><?= $row['product_name'] ?></strong></td>
+                                            <td><?= $row['size'] ?></td>
+                                            <td><?= $row['color'] ?></td>
+                                            <td><?= $row['order_date'] ?></td>
+                                            <td><?= $row['total'] ?>$</td>
+                                            <td><span class="status-badge status-delivered"><?= $row['status'] ?></span></td>
                                         </tr>
-                                        <tr>
-                                            <td class="order-id">#ST2457</td>
-                                            <td><strong>Classic White Sneakers</strong></td>
-                                            <td>42</td>
-                                            <td>White</td>
-                                            <td>March 8, 2023</td>
-                                            <td>$79.99</td>
-                                            <td><span class="status-badge status-cancelled">Cancelled</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="order-id">#ST2458</td>
-                                            <td><strong>Summer Floral Dress</strong></td>
-                                            <td>S</td>
-                                            <td>Multicolor</td>
-                                            <td>March 6, 2023</td>
-                                            <td>$65.50</td>
-                                            <td><span class="status-badge status-processing">Processing</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="order-id">#ST2459</td>
-                                            <td><strong>Casual Linen Shirt</strong></td>
-                                            <td>L</td>
-                                            <td>Beige</td>
-                                            <td>March 13, 2023</td>
-                                            <td>$45.00</td>
-                                            <td><span class="status-badge status-delivered">Delivered</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="order-id">#ST2460</td>
-                                            <td><strong>Wool Blend Coat</strong></td>
-                                            <td>M</td>
-                                            <td>Black</td>
-                                            <td>March 7, 2023</td>
-                                            <td>$129.99</td>
-                                            <td><span class="status-badge status-processing">Processing</span></td>
-                                        </tr>
+                                        <?php 
+                                        $i++;
+                                        }
+                                        $stmt->close();
+
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -1205,66 +1292,97 @@
                             </div>
                         </div>
                     </div>
+<!-- backend to get the based info .. 'hasan'  -->
+<?php
+                                $stmt=$connect->prepare("select u.name , u.email , u.phone , o.shipping_address from orders as o , users as u
+                                                                where o.user_id = u.id 
+                                                                and u.id = ?");
+                                $stmt->bind_param("i",$_SESSION['user_id']);
+                                $stmt->execute();
+                                $result=$stmt->get_result();
+                                if($result->num_rows > 0)
+                                {
+                                $row = $result->fetch_assoc();
+                                $parts=explode(" ",$row['name']);
+                                $firstName = $parts[0] ?? '';
+                                $lastName = $parts[1] ?? '';
+                            }
+
+?>
 
                     <!-- Profile Content -->
                     <div id="profile-section" class="content-section">
                         <div class="profile-card fade-in">
                             <h3 class="card-title">My Profile</h3>
+                            <?php if (isset($_GET['success'])): ?>
+                                <div class="alert alert-success"> 
+                                    <!-- eza heben tfhmo lsar alrt ya3ne mtl tnbeh w alert-sucsess ltsir bl a5dar -->
+                                        Data  updated successfully !!
+                                    </div>
+                            <?php endif; ?>
+
                             <p class="text-muted mb-4">Update your personal information and preferences</p>
 
-                            <form class="profile-form">
+                            <form method="post"  class="profile-form">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="first-name">First Name</label>
-                                            <input type="text" class="form-control" id="first-name" value="Haidar">
+                                            <input type="text" class="form-control" name="FN" id="first-name" value="<?= $firstName??"Guest" ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="last-name">Last Name</label>
-                                            <input type="text" class="form-control" id="last-name" value="habach">
+                                            <input type="text" class="form-control" name="LN" id="last-name" value="<?= $lastName??"unknow" ?>">
                                         </div>
                                     </div>
                                 </div>
-
+                                
                                 <div class="form-group">
                                     <label for="email">Email Address</label>
-                                    <input type="email" class="form-control" id="email" value="haidarhabach@gmail.com">
+                                    <input type="email" class="form-control" name="email" id="email" value="<?= $row['email']??"" ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="phone">Phone Number</label>
-                                    <input type="tel" class="form-control" id="phone" value="+1 234 567 8900">
+                                    <input type="tel" class="form-control" id="phone" name="phone" value="<?= $row['phone']??"" ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="address">Shipping Address</label>
-                                    <input type="text" class="form-control" id="address"
-                                        value="123 Fashion Street, New York, NY 10001">
+                                    <input type="text" name="address" class="form-control" id="address"
+                                        value="<?= $row['shipping_address'] ?? "Ouzaii" ?>">
                                 </div>
-
+                                <?php $stmt->close(); ?>
+                                
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="password">New Password</label>
-                                            <input type="password" class="form-control" id="password"
+                                            <input type="password" name="password"  class="form-control" id="password"
                                                 placeholder="Enter new password">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="confirm-password">Confirm Password</label>
-                                            <input type="password" class="form-control" id="confirm-password"
-                                                placeholder="Confirm new password">
+                                            <input  type="password" name="confirmPassword" class="form-control" id="confirm-password"
+                                                placeholder="Confirm new password" <?php if(isset($_GET['errorConfirm'])){echo "style=border-color:red;font-size:19;";} ?>>
+                                                <?php
+                                                if(isset($_GET['errorConfirm']))
+                                                {
+                                                    echo "<span style=color:red;font-size:19;>Password not match !</span>";
+                                                }
+                                                ?>
                                         </div>
                                     </div>
                                 </div>
-
+                                    
                                 
 
                                 <div class="text-end mt-4">
-                                    <button type="submit" class="btn btn-update">Update Profile</button>
+                                    <button type="submit" name="updateProfile" class="btn btn-update">Update Profile</button>
                                 </div>
                             </form>
                         </div>
@@ -1604,6 +1722,46 @@
             animatedElements.forEach(el => observer.observe(el));
         });
     </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const params = new URLSearchParams(window.location.search);
+    // hon azde rj3 l url ba3ed 3alemet l ? ya3ne eza fi error w section .. aw sucsess w section .. 
+    // small example ?section=profile&success=1
+    const section = params.get("section");
+    // jeble value tb3 section sho hwe profile ? jebo llvalue sho m ken  
+
+    if (section) {
+        // shel active 3an kel button lside bar hon mshen m yn3rd shi 
+        document.querySelectorAll(".menu-button").forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+        // hone 5fet kel section lmybyn wla whde 
+        document.querySelectorAll(".content-section").forEach(sec => {
+            sec.classList.remove("active");
+        });
+
+        // hone bde hded aya section bde ? le htt -section ? ftred rj3le profile ana bde ahke m3 profile -section concate 3de 
+        const targetSection = document.getElementById(section + "-section");
+        // hone ftesh aal osom 
+        const targetButton = document.querySelector(`[data-section="${section}"]`);
+        // hone ftesh aal zer tb3 side bar w hot tnen active 
+        if (targetSection && targetButton) {
+            targetSection.classList.add("active");
+            targetButton.classList.add("active");
+        }
+    }
+});
+</script>
+<!-- here select the class then remove the alert after 3 sec  -->
+<script>
+setTimeout(() => {
+    const alert = document.querySelector(".alert-success");
+    if (alert) alert.remove();
+}, 3000);
+</script>
+
 </body>
 
 </html>
