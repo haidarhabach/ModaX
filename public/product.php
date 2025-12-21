@@ -42,6 +42,8 @@ if (isset($_GET['add']) && $_GET['add'] == 1)
     $price  =   $_GET['price'];
     $qty    =   $_GET['qty'];
     $photo  = $_GET['photo'];
+    $color = $_GET['color'];
+    $size = $_GET['size'];
     
     $found=false;
     //& to change the session by variable 
@@ -62,7 +64,9 @@ if (isset($_GET['add']) && $_GET['add'] == 1)
             'name'  =>  $name,
             'price' =>  $price,
             'qty'   => $qty,
-            'photo' =>   $photo
+            'photo' =>   $photo,
+            'color' => $color , 
+            'size' => $size 
         ];
     }
     $params = $_GET;
@@ -1248,9 +1252,13 @@ exit;
 
                         <div class="form-grid">
                             <!-- Size Selection -->
+                            
+                            <!-- can use with the Post but its ok :P -->
+                            <form method="GET" class="display-content-form">
+
                             <div class="form-row">
                                 <label for="size-select">Size</label>
-                                <select id="size-select" class="custom-input">
+                                <select name="size" id="size-select" class="custom-input">
                                     <option value="">Choose an option</option>
                                     <option value="s">Size S</option>
                                     <option value="m">Size M</option>
@@ -1262,7 +1270,7 @@ exit;
                             <!-- Color Selection -->
                             <div class="form-row">
                                 <label for="color-select">Color</label>
-                                <select id="color-select" class="custom-input">
+                                <select name="color" id="color-select" class="custom-input">
                                     <option value="">Choose an option</option>
                                     <option value="red">Red</option>
                                     <option value="blue">Blue</option>
@@ -1271,8 +1279,7 @@ exit;
                                 </select>
                             </div>
 
-                            <!-- can use with the Post but its ok :P -->
-                            <form method="GET" class="display-content-form">
+
 
                             <input type="hidden" name="id" value="<?= $_GET["id"]??"" ?>">
                             <input type="hidden" name="name" value="<?= $_GET["name"]??"" ?>">
