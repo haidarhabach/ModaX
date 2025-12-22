@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php';
+include '../includes/db.php';
 if(!isset($_SESSION['user_id']))
 {
     header("Location:login.php");
@@ -1056,8 +1056,13 @@ $stmt->close();
 
                 <div class="right-links d-flex">
                     <a href="#" class="me-3">Help & FAQs</a>
-                    <a href="#" class="me-3">My Account</a>
-                    <a href="login.php" class="me-3">sign in</a>
+                    <a href="myAccount.php" class="me-3">My Account</a>
+                    <a href="login.php" <?php 
+                    if (isset($_SESSION['user_id']) || isset($_SESSION['admin_id'])) {
+                       echo "hidden";
+                    }
+                    ?>
+                    class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -1081,16 +1086,14 @@ $stmt->close();
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="index.php" >
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="products.php">Shop</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
+                    
 
                     <li class="nav-item">
                         <a class="nav-link" href="cart.php">Cart</a>
@@ -1204,9 +1207,14 @@ $stmt->close();
                     <div class="dashboard-sidebar">
                         <div class="sidebar-card fade-in">
                             <div class="user-profile">
-                                
-                                <h3 class="profile-name">haidar habach</h3>
-                                <p class="profile-email">haidarhabach@gmail.com</p>
+                                <?php
+                                $stmt=$connect->prepare("select name,email from users where users.id=?");
+                                $stmt->bind_param("i",$_SESSION['user_id']);
+                                $stmt->execute();
+                                $result=$stmt->get_result()->fetch_assoc();
+                                ?>
+                                <h3 class="profile-name"><?= $result['name'] ?></h3>
+                                <p class="profile-email"><?= $result['email'] ?></p>
                             </div>
 
                             <div class="sidebar-menu">
@@ -1223,10 +1231,7 @@ $stmt->close();
                                     <i class="fas fa-shopping-bag"></i>
                                     <span>My Orders</span>
                                 </button>
-                                <button class="menu-button" data-section="wishlist">
-                                    <i class="fas fa-heart"></i>
-                                    <span>Wishlist</span>
-                                </button>
+                                
                                 <button class="menu-button" data-section="signout">
                                     <i class="fas fa-sign-out-alt"></i>
                                     <span>Sign Out</span>
@@ -1349,100 +1354,7 @@ $stmt->close();
                             </div>
                         </div>
 
-                        <!-- Wishlist Items -->
-                        <div class="wishlist-card fade-in">
-                            <h3 class="card-title">Wishlist Items</h3>
-
-                            <!-- Wishlist Item 1 -->
-                            <div class="wishlist-item">
-                                <div class="product-image">
-                                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                        alt="Leather Biker Jacket">
-                                </div>
-
-                                <div class="product-info">
-                                    <h4 class="product-name">Premium Leather Biker Jacket</h4>
-                                    <div class="product-specs">
-                                        <div class="spec-item">
-                                            <i class="fas fa-ruler"></i> Size: M
-                                        </div>
-                                        <div class="spec-item">
-                                            <i class="fas fa-palette"></i> Color: Black
-                                        </div>
-                                        <div class="spec-item">
-                                            <i class="fas fa-tag"></i> Category: Outerwear
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-
-                                <div class="product-price">
-                                    
-                                    <div class="original-price">$159.99</div>
-                                    <button class="btn-add-to-cart">Add to Cart</button>
-                                </div>
-                            </div>
-
-                            <!-- Wishlist Item 2 -->
-                            <div class="wishlist-item">
-                                <div class="product-image">
-                                    <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                        alt="Casual Hoodie">
-                                </div>
-
-                                <div class="product-info">
-                                    <h4 class="product-name">Oversized Casual Hoodie</h4>
-                                    <div class="product-specs">
-                                        <div class="spec-item">
-                                            <i class="fas fa-ruler"></i> Size: L
-                                        </div>
-                                        <div class="spec-item">
-                                            <i class="fas fa-palette"></i> Color: Grey
-                                        </div>
-                                        <div class="spec-item">
-                                            <i class="fas fa-tag"></i> Category: Casual
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-
-                                <div class="product-price">
-                                    <div class="original-price">$69.99</div>
-                                
-                                    <button class="btn-add-to-cart">Add to Cart</button>
-                                </div>
-                            </div>
-
-                            <!-- Wishlist Item 3 -->
-                            <div class="wishlist-item">
-                                <div class="product-image">
-                                    <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                        alt="Formal Suit">
-                                </div>
-
-                                <div class="product-info">
-                                    <h4 class="product-name">Classic Fit Formal Suit</h4>
-                                    <div class="product-specs">
-                                        <div class="spec-item">
-                                            <i class="fas fa-ruler"></i> Size: 42R
-                                        </div>
-                                        <div class="spec-item">
-                                            <i class="fas fa-palette"></i> Color: Navy Blue
-                                        </div>
-                                        <div class="spec-item">
-                                            <i class="fas fa-tag"></i> Category: Formal
-                                        </div>
-                                        
-                                    </div>
-                                </div>
-
-                                <div class="product-price">
-                                    <div class="original-price">$299.99</div>
-                                    
-                                    <button class="btn-add-to-cart">Add to Cart</button>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
 <!-- backend to get the based info .. 'hasan'  -->
 <?php
@@ -1480,13 +1392,13 @@ $stmt->close();
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="first-name">First Name</label>
-                                            <input type="text" class="form-control" name="FN" id="first-name" value="<?= $firstName??"Guest" ?>">
+                                            <input type="text" class="form-control" name="FN" id="first-name" value="<?= $firstName ?? "Guest" ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="last-name">Last Name</label>
-                                            <input type="text" class="form-control" name="LN" id="last-name" value="<?= $lastName??"unknow" ?>">
+                                            <input type="text" class="form-control" name="LN" id="last-name" value="<?= $lastName ?? "unknow" ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -1498,7 +1410,7 @@ $stmt->close();
 
                                 <div class="form-group">
                                     <label for="phone">Phone Number</label>
-                                    <input type="tel" class="form-control" id="phone" name="phone" value="<?= $row['phone']??"" ?>">
+                                    <input type="tel" class="form-control" id="phone" name="phone" value="<?= $row['phone'] ?? "" ?>">
                                 </div>
 
                                 <div class="form-group">
@@ -1763,21 +1675,7 @@ $i++;
                         </div>
                     </div>
 
-                    <!-- Wishlist Content -->
-                    <div id="wishlist-section" class="content-section">
-                        <div class="wishlist-card fade-in">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h3 class="card-title mb-0">My Wishlist</h3>
-                                
-                            </div>
-                            <p class="text-muted mb-4">Save your favorite items for later purchase</p>
-
-                            <!-- Wishlist items will be populated here -->
-                            <div class="wishlist-items-container">
-                                <!-- Items are loaded from the dashboard section -->
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <!-- Sign Out Content -->
                     <div id="signout-section" class="content-section">
