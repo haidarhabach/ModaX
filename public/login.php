@@ -2,7 +2,7 @@
 
 <?php
 session_start();
-include('db.php');
+include('../includes/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
@@ -53,6 +53,11 @@ else if(isset($_POST['login_admin']))
                 unset($_SESSION['user_id']); 
                 unset($_SESSION['user_name']);
               }
+            }
+            if(isset($_SESSION['admin_id']))
+            {
+              header("Location: ../admin/index.php");
+              exit();
             }
             header("Location: index.php");
             exit();
