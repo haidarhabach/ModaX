@@ -340,6 +340,11 @@ session_start();
             margin: 0 8px;
             display: inline-block;
         }
+        .page-hero h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
 
         .payment-icon {
             width: 50px;
@@ -407,8 +412,13 @@ session_start();
 
                 <div class="right-links d-flex">
                     <a href="../public/contact.php" class="me-3">Help & FAQs</a>
-                    <a href="#" class="me-3">My Account</a>
-                    <a href="login.php" class="me-3">sign in</a>
+                    <a href="myaccount.php" class="me-3">My Account</a>
+                    <a href="login.php" <?php 
+                    if (isset($_SESSION['user_id']) || isset($_SESSION['admin_id'])) {
+                       echo "hidden";
+                    }
+                    ?>
+                    class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -439,9 +449,7 @@ session_start();
                     <li class="nav-item">
                         <a class="nav-link" href="products.php">Shop</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
+                    
 
                     <li class="nav-item">
                         <a class="nav-link" href="cart.php">Cart</a>
@@ -661,8 +669,8 @@ Your style is personal. Our mission is to support it.
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <h4>GET IN TOUCH</h4>
                     <p>
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
-                        on (+1) 96 716 6879
+                        Any questions? Let us know in store at 8th floor, Ouzaii, beirut, lebanon or call us
+                        on (+961) 01 234 567
                     </p>
                     <div class="social-icons pt-3">
                         <a href="#">
