@@ -3,14 +3,9 @@
 <?php
 session_start();
 include '../includes/db.php';
-// $_SESSION['cart'][] = [
-//   'id' => 1,
-//   'name' => 'White Shirt Pleat',
-//   'price' => 19.00,
-//   'qty' => 1,
-//   'image' => 'assets/images/item-cart-01.jpg'
-//  ];
 
+$_SESSION['cart'] = $_SESSION['cart'] ?? [];
+ 
 if (isset($_GET['remove'])) {
     $remove_id = $_GET['remove'];
     foreach ($_SESSION['cart'] as $index => $item) {
@@ -21,6 +16,10 @@ if (isset($_GET['remove'])) {
     $_SESSION['cart'] = array_values($_SESSION['cart']);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
+}
+$cartCount = 0;
+foreach ($_SESSION['cart'] as $item) {
+    $cartCount += $item['qty'];
 }
 ?>
 
@@ -420,8 +419,13 @@ if (isset($_GET['remove'])) {
 
                 <div class="right-links d-flex">
                     <a href="../public/contact.php" class="me-3">Help & FAQs</a>
-                    <a href="#" class="me-3">My Account</a>
-                    <a href="login.php" class="me-3">sign in</a>
+                    <a href="myAccount.php" class="me-3">My Account</a>
+                    <a href="login.php" <?php 
+                    if (isset($_SESSION['user_id']) || isset($_SESSION['admin_id'])) {
+                       echo "hidden";
+                    }
+                    ?>
+                    class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -452,9 +456,7 @@ if (isset($_GET['remove'])) {
                     <li class="nav-item">
                         <a class="nav-link" href="products.php">Shop</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
+                    
 
                     <li class="nav-item">
                         <a class="nav-link" href="cart.php">Cart</a>
@@ -471,9 +473,7 @@ if (isset($_GET['remove'])) {
 
                 <!-- Header Icons -->
                 <div class="d-flex align-items-center">
-                    <a href="#" class="header-icon" data-bs-toggle="modal" data-bs-target="#searchModal">
-                        <i class="fas fa-search"></i>
-                    </a>
+                   
 
                     <div class="icon-container">
                         <a href="cart.php" class="header-icon">
@@ -490,25 +490,7 @@ if (isset($_GET['remove'])) {
         </div>
     </nav>
 
-    <!-- Search Modal -->
-    <div class="modal fade" id="searchModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Search Products</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="What are you looking for?">
-                            <button class="btn btn-primary" type="submit">Search</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Cart Sidebar-->
 
@@ -977,9 +959,7 @@ if(isset($_GET["search"]))
     // %x% fi x bhyla mahal :}
     // haidar 3mol eza 3tet product aw category msh b db y3rod aashshe eno invalid product aw hek shi
     $search =  "%" .$_GET["search"]. "%" ;
-    // htet % len lhmr yemkn m yktb esm lproduct kemel msln Esprit Langue yemkn yktb bs Esprit 
-    // aw bs sprit hon btbyn 3endo 3l halten :)
-    //Like mhtta leno hnshf string Hasan Like Hasan = > return data .. :() 
+    
 
     $query = "SELECT p.category_id,p.id,c.id ,p.price, p.name, filename, p.type
             FROM products AS p 
@@ -994,6 +974,7 @@ if(isset($_GET["search"]))
 else {
 
 // the query code < old one >
+$query .= " LIMIT 8";
 $stmt = $connect->prepare($query);
 $stmt->execute();
 }
@@ -1085,8 +1066,8 @@ while ($row = $result->fetch_assoc()) {
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <h4>GET IN TOUCH</h4>
                     <p>
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
-                        on (+1) 96 716 6879
+                        Any questions? Let us know in store at 8th floor, Ouzaii, beirut, lebanon or call us
+                        on (+961) 01 234 567
                     </p>
                     <div class="social-icons pt-3">
                         <a href="#">
