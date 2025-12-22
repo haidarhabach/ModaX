@@ -4,7 +4,7 @@
 
 <?php
 session_start();
-include 'db.php';
+include '../includes/db.php';
 // hasan  + haidar 
 if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['notify']))
 {
@@ -176,7 +176,7 @@ if ($product_id) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Esem el product Product Detail</title>
+    <title>Product Detail</title>
     <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
 
     <!-- External CSS -->
@@ -1263,8 +1263,13 @@ if ($product_id) {
                 </div>
                 <div class="right-links d-flex">
                     <a href="#" class="me-3">Help & FAQs</a>
-                    <a href="#" class="me-3">My Account</a>
-                    <a href="login.php" class="me-3">Sign In</a>
+                    <a href="myaccount.php" class="me-3">My Account</a>
+                    <a href="login.php" <?php 
+                    if (isset($_SESSION['user_id']) || isset($_SESSION['admin_id'])) {
+                       echo "hidden";
+                    }
+                    ?>
+                    class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -1733,8 +1738,8 @@ $result=$stmt->get_result();
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <h4>GET IN TOUCH</h4>
                     <p>
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
-                        on (+1) 96 716 6879
+                        Any questions? Let us know in store at 8th floor, Ouzaii, beirut, lebanon or call us
+                        on (+961) 01 234 567
                     </p>
                     <div class="social-icons pt-3">
                         <a href="#">
