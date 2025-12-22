@@ -419,7 +419,7 @@ if (isset($_GET['remove'])) {
                 </div>
 
                 <div class="right-links d-flex">
-                    <a href="#" class="me-3">Help & FAQs</a>
+                    <a href="../public/contact.php" class="me-3">Help & FAQs</a>
                     <a href="#" class="me-3">My Account</a>
                     <a href="login.php" class="me-3">sign in</a>
                 </div>
@@ -445,7 +445,7 @@ if (isset($_GET['remove'])) {
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="index.php" >
                             Home
                         </a>
                     </li>
@@ -523,47 +523,48 @@ if (isset($_GET['remove'])) {
             <div class="cart-items-container" style="max-height: 400px; overflow-y: auto;">
                 <ul class="list-group list-group-flush">
 
-                    <?php
+                            <?php
                     $total = 0;
                     if (!empty($_SESSION['cart'])):
                         foreach ($_SESSION['cart'] as $item):
                             $itemTotal = $item['price'] * $item['qty'];
                             $total += $itemTotal;
-                            ?>
-
-                            <li class="list-group-item border-0">
-                                <div class="row align-items-center g-3">
-                                    <div class="col-3">
-                                        <img src="<?= $item['image'] ?>" class="img-fluid rounded" alt="<?= $item['name'] ?>">
-                                    </div>
-
-                                    <div class="col-9">
-                                        <a href="#" class="text-decoration-none text-dark fw-semibold d-block mb-1">
-                                            <?= $item['name'] ?>
-                                        </a>
-
-                                        <span class="text-muted small">
-                                            <?= $item['qty'] ?> x $<?= number_format($item['price'], 2) ?>
-                                        </span>
-
-                                        <a href="?remove=<?= $item['id'] ?>" class="btn btn-sm btn-outline-danger mt-1">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-
-                        <?php endforeach; else: ?>
-
-                        <li class="list-group-item text-center py-4">
-                            <em>Your cart is empty</em>
-                        </li>
-
+                    ?>
+                    <li class="list-group-item border-0">
+                        <div class="row align-items-center g-3">
+                            <div class="col-3">
+                                <img src="assets/images/<?= htmlspecialchars($item['photo']) ?>" class="img-fluid rounded" alt="<?= htmlspecialchars($item['name']) ?>">
+                            </div>
+                            <div class="col-9">
+                                <a href="#" class="text-decoration-none text-dark fw-semibold d-block mb-1">
+                                    <?= htmlspecialchars($item['name']) ?>
+                                </a>
+                                <span class="text-muted small">
+                                    <?= htmlspecialchars($item['qty']) ?> x $<?= number_format($item['price'], 2) ?>
+                                </span>
+                                <!-- why use this ? to dont forget the get reload page with all 
+                                get only add the remove to get-->
+                                <a href="<?= $_SERVER['PHP_SELF'] ?>?remove=<?= $item['id'] ?>"
+                        class="btn btn-sm btn-outline-danger mt-1">
+                            <i class="fas fa-trash"></i>
+                                    </a>
+                            </div>
+                        </div>
+                    </li>
+                    <?php
+                        endforeach;
+                    else:
+                    ?>
+                    <li class="list-group-item text-center py-4">
+                        <em>Your cart is empty</em>
+                    </li>
                     <?php endif; ?>
-
                 </ul>
             </div>
 
+
+                
+     
             <!-- Cart Summary -->
             <div class="cart-summary border-top bg-light p-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -612,7 +613,7 @@ if (isset($_GET['remove'])) {
                             </div>
 
                             <div class="slide-action animated zoomIn">
-                                <a href="product.php" class="btn btn-primary btn-shop">
+                                <a href="products.php" class="btn btn-primary btn-shop">
                                     Shop Now
                                 </a>
                             </div>
@@ -638,7 +639,7 @@ if (isset($_GET['remove'])) {
                             </div>
 
                             <div class="slide-action animated slideInUp">
-                                <a href="product.php" class="btn btn-primary btn-shop">
+                                <a href="products.php" class="btn btn-primary btn-shop">
                                     Shop Now
                                 </a>
                             </div>
@@ -664,7 +665,7 @@ if (isset($_GET['remove'])) {
                             </div>
 
                             <div class="slide-action animated rotateIn">
-                                <a href="product.php" class="btn btn-primary btn-shop">
+                                <a href="products.php" class="btn btn-primary btn-shop">
                                     Shop Now
                                 </a>
                             </div>
@@ -901,7 +902,7 @@ if (isset($_GET['remove'])) {
             <!-- Product Grid -->
             <div class="row" id="product-grid">
 <?php
-$query = "select p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
+$query = "select p.category_id,p.id,c.id , p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
 where  p.id = i.product_id AND c.id= p.category_id";
 
 // -- price --
@@ -980,7 +981,7 @@ if(isset($_GET["search"]))
     // aw bs sprit hon btbyn 3endo 3l halten :)
     //Like mhtta leno hnshf string Hasan Like Hasan = > return data .. :() 
 
-    $query = "SELECT p.price, p.name, filename, p.type
+    $query = "SELECT p.category_id,p.id,c.id ,p.price, p.name, filename, p.type
             FROM products AS p 
             JOIN product_images AS i ON p.id = i.product_id
             JOIN categories AS c ON c.id = p.category_id
@@ -1003,14 +1004,16 @@ $result = $stmt->get_result();
 ?>
 
 <div class="row" id="product-grid">
-<?php
+<?php 
 while ($row = $result->fetch_assoc()) {
     ?>
     <div class="col-sm-6 col-md-4 col-lg-3 product-item <?= $row['type'] ?>">
         <div class="product-card">
             <div class="product-image">
                 <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
-                <a href="#" class="quick-view-btn">Quick View</a>
+                <a href="product.php?name=<?= $row['name'] ?>&price=
+                <?= $row['price'] ?>&photo=<?= $row['filename'] ?>&type=<?= $row['type'] ?>
+                &id=<?= $row['id'] ?> &category=<?= $row['category_id'] ?>" class="quick-view-btn">Quick View</a>
             </div>
             <div class="product-info d-flex justify-content-between align-items-start">
                 <div>
@@ -1026,6 +1029,7 @@ while ($row = $result->fetch_assoc()) {
 <?php
 }
 ?>
+
 </div>
 
                 
