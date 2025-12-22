@@ -5,6 +5,21 @@
 <?php
 session_start();
 include 'db.php';
+// hasan  + haidar 
+if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['notify']))
+{
+    $product_id = $_POST['product_id'];
+    $category_name = $_POST['category'];
+    $type = $_POST['type'];
+    $email = $_POST['email'];
+    $stmt = $connect->prepare("INSERT INTO stock_notifications(product_id , email , category  
+    , type , notified , created_at ) values (? , ?, ?, ?, 0, now())  ");
+    $stmt->bind_param("isss",$product_id ,$email,$category_name , $type );
+    $stmt->execute();
+    $stmt->close();
+    header("Location:index.php");
+    exit;
+}
 
 if (!isset($_SESSION["cart"])) {
     $_SESSION["cart"] = [];
@@ -1534,17 +1549,15 @@ if ($product_id) {
                         <?php if ($stock_available == 0 && $product_details): ?>
                             <div class="notify-form">
                                 <h4>Notify me when available</h4>
-                                <form method="POST" action="notify_me.php" id="notifyForm">
+                                <form method="POST" action="#" id="notifyForm">
                                     <input type="hidden" name="product_id" value="<?= $product_id ?>">
                                     <input type="hidden" name="category" value="<?= htmlspecialchars($category_name) ?>">
                                     <input type="hidden" name="type" value="<?= htmlspecialchars($product_type) ?>">
-                                    <input type="hidden" name="color" value="">
-                                    <input type="hidden" name="size" value="">
 
                                     <div class="input-group">
                                         <input type="email" name="email" placeholder="Enter your email" required
                                             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                                        <button type="submit">Notify Me</button>
+                                        <button type="submit" name="notify">Notify Me</button>
                                     </div>
                                     <small class="text-muted mt-2 d-block">
                                         We'll send you an email when this product is back in stock.
