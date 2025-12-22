@@ -1,10 +1,20 @@
 <?php
 session_start();
-include '../includes/db.php';
-    $admin_id =$_SESSION['admin_id'];
-    $admin_name =$_SESSION['admin_name'];
-
+include '../db.php';
+    $admin_id=$_SESSION['admin_id'] ?? '';
+    $admin_name=$_SESSION['admin_name'] ?? ""; 
+    if(!isset($admin_id)){header("Location:login.php");}
     $stats=[];
+
+    function update_notify($connect , $id)
+    {
+        $stmt=$connect->prepare("UPDATE stock_notifications set notified = 1 where id = $id");
+        $stmt->execute();
+        $stmt->close();
+    }
+
+
+
 
     //total products
     $stmt = $connect->query("SELECT COUNT(*) AS total_products FROM products");
@@ -19,7 +29,7 @@ include '../includes/db.php';
     $stats['total_customers']=$stmt->fetch_assoc()['total_customers'];
 
     //total revenue
-    $stmt=$connect->query("SELECT SUM(total) AS total FROM orders WHERE status='delivered'");
+    $stmt=$connect->query("SELECT SUM(total) AS total FROM orders WHERE status='completed' or status= 'processing'");
     $revenue=$stmt->fetch_assoc()['total'];
     $stats['total']=$revenue ? number_format($revenue,2) : '0.00';
 
@@ -93,7 +103,7 @@ include '../includes/db.php';
 
         //handle image upload
         if(isset($_FILES['product_image'])&& $_FILES['product_image']['error']===0){
-            $target_dir="../public/assets/images/";
+            $target_dir="../assets/images/";
             if(!is_dir($target_dir)){
                 mkdir($target_dir,0777,true);
             }
@@ -102,8 +112,8 @@ include '../includes/db.php';
             $target_file = $target_dir . $filename;
             if (move_uploaded_file($_FILES['product_image']['tmp_name'], $target_file)) {
                 //insert into product_images
-                $stmt = $connect->prepare("INSERT INTO product_images (product_id, filename, is_main) VALUES (?, ?, ?)");
-                $is_main = 1;
+                $stmt = $connect->prepare("INSERT INTO product_images (product_id, filename, is_main) VALUES (?, ?, 1)");
+                
                 $stmt->execute([$product_id, $filename]);
         }
     }
@@ -132,20 +142,36 @@ include '../includes/db.php';
     //handle update quantity
     if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['update_quantity'])){
         $product_id = intval($_POST['product_id']);
-        $quantity = intval($_POST['quantity']);
-
-        $stmt = $connect->prepare("UPDATE products SET stock = ? WHERE id = ?");
-        $stmt->execute([$quantity, $product_id]);
-
-        header("Location: index.php?section=products&msg=quantity_updated");
-        exit();
-    }
+        $newqty = intval($_POST['quantity']);
+        $stmt = $connect->prepare("SELECT stock from products where id = ?");
+        $stmt->bind_param("i",$product_id);
+        $stmt->execute();
+        $stmt->bind_result($oldqty);
+        $stmt->close();
+        if($oldqty==0 && $newqty > 0)
+        {
+            $stmt=$connect->prepare("SELECT id,email FROM stock_notifications where notified = 0 and product_id=$product_id ");
+            $stmt->execute();
+            $emails = $stmt->get_result();
+            while($row = $emails->fetch_assoc())
+            {
+                mail($row['email'],"Stock Updated !!!","the product you requested is available ");
+                update_notify($connect,$row['id']);
+            }
+            $stmt->close();
+        }
+            $stmt = $connect->prepare("UPDATE products SET stock = ? WHERE id = ?");
+            $stmt->execute([$newqty, $product_id]);
+            $stmt->close();
+            header("Location: index.php?section=products&msg=quantity_updated");
+            exit();
+        }
 
     //handle logout
     if (isset($_GET['logout'])){
         session_unset();
         session_destroy();
-        header("Location: ../public/login.php");
+        header("Location: ../login.php");
         exit();
     }
 
@@ -167,7 +193,7 @@ include '../includes/db.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../public/assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
     <style>
         :root {
             --primary-color: #0d6efd;
@@ -792,12 +818,12 @@ include '../includes/db.php';
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="../public/index.php" >
+                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../public/products.php">Shop</a>
+                        <a class="nav-link" href="products.php">Shop</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="blog.php">Blog</a>
@@ -953,7 +979,7 @@ include '../includes/db.php';
                                 <?php foreach ($top_products as $product): ?>
                                 <div class="product-item">
                                     <div class="product-image-container">
-                                        <img src="<?php echo $product['filename'] ? '../public/assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>">
+                                        <img src="<?php echo $product['filename'] ? '../assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>">
 
                                         <span class="availability-badge <?php 
                                             if ($product['stock'] > 10) echo 'in-stock';
@@ -1032,7 +1058,7 @@ include '../includes/db.php';
                                     <?php foreach ($all_products as $product): ?>
                                     <div class="product-item">
                                         <div class="product-image-container">
-                                            <img src="<?php echo $product['filename'] ? '../public/assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                            <img src="<?php echo $product['filename'] ? '../assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
                                             <span class="availability-badge <?php 
                                                 if ($product['stock'] > 10) echo 'in-stock';
                                                 elseif ($product['stock'] > 0) echo 'low-stock';
