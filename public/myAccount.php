@@ -1,10 +1,162 @@
 <?php
 session_start();
 include 'db.php';
+if(!isset($_SESSION['user_id']))
+{
+    header("Location:login.php");
+}
+// the signout code now 
+if($_SERVER['REQUEST_METHOD']=="POST" && isset($_POST['SignOut']))
+{
+    unset($_SESSION['user_id']);
+}
+function cancelOrder($connect, $order_id, $user_id) {
+    
+    $stmt = $connect->prepare("
+        UPDATE orders 
+        SET status = 'cancelled' 
+        WHERE id = ? AND user_id = ?
+    ");
+    $stmt->bind_param("ii", $order_id, $user_id);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
+}
+
+//handle the cancel here 
+if (isset($_POST['cancel_order']) && isset($_POST['order_id'])) {
+    $order_id = $_POST['order_id'];
+    $user_id = $_SESSION['user_id'];
+    
+    if (cancelOrder($connect, $order_id, $user_id)) {
+        header("Location: myAccount.php?section=orders&cancel_success=1");
+        exit;
+    } else {
+        header("Location: myAccount.php?section=orders&cancel_error=1");
+        exit;
+    }
+}
+// now handle the buy again :)
+function buyAgain($connect, $order_id, $user_id) {
+    
+    $stmt = $connect->prepare("
+        SELECT oi.product_id, oi.quantity, oi.size, oi.color, 
+        p.name as product_name, p.price, pi.filename
+        FROM order_items oi
+        JOIN orders o ON o.id = oi.order_id
+        JOIN products p ON p.id = oi.product_id
+        LEFT JOIN product_images pi ON pi.product_id = p.id
+        WHERE o.id = ? AND o.user_id = ?
+        LIMIT 1
+    ");
+    $stmt->bind_param("ii", $order_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        $stmt->close();
+        return false;
+    }
+    
+    
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+    
+    
+    $items_added = 0;
+    while ($row = $result->fetch_assoc()) {
+        
+        $found = false;
+        foreach ($_SESSION['cart'] as &$item) {
+            if ($item['id'] == $row['product_id'] && 
+                $item['size'] == $row['size'] && 
+                $item['color'] == $row['color'])
+                {
+                $item['qty'] += $row['quantity'];
+                $found = true;
+                break;
+            }
+        }
+        
+        // if not foumd add the new one 
+        if (!$found) {
+            $_SESSION['cart'][] = [
+                'id' => $row['product_id'],
+                'name' => $row['product_name'],
+                'price' => $row['price'],
+                'qty' => $row['quantity'],
+                'size' => $row['size'],
+                'color' => $row['color'],
+                'photo' => $row['filename']
+            ];
+        }
+        
+        $items_added++;
+    }
+    
+    $stmt->close();
+    return $items_added > 0;
+}
+
+// handle the buy again 
+if (isset($_POST['buy_again']) && isset($_POST['order_id'])) {
+    $order_id = $_POST['order_id'];
+    $user_id = $_SESSION['user_id'];
+    
+    if (buyAgain($connect, $order_id, $user_id)) {
+        header("Location: myAccount.php?section=orders&buy_success=1&cart_count=" . count($_SESSION['cart']));
+        exit;
+    } else {
+        header("Location: myAccount.php?section=orders&buy_error=1");
+        exit;
+    }
+}
+
+
+
+// hone ll my orders..
+$stmt = $connect->prepare("
+    SELECT 
+        oi.product_name,o.status,
+        DATE_FORMAT(o.created_at, '%b %e, %Y') as order_date,
+        DATE_FORMAT(DATE_ADD(o.created_at, INTERVAL 3 DAY), '%b %e, %Y') as delivered_date,
+        DATE_FORMAT(DATE_ADD(o.created_at, INTERVAL 6 DAY), '%b %e, %Y') as processing_date,
+
+        oi.order_id, 
+        oi.quantity,
+        oi.size,
+        oi.color, 
+        oi.price,
+        pi.filename
+    FROM orders as o 
+    JOIN order_items as oi ON o.id = oi.order_id 
+    JOIN product_images as pi ON oi.product_id = pi.product_id
+    WHERE o.user_id = ?
+    
+");
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
+$delivered = [];
+$processing = [];
+$cancelled = [];
+
+while ($row = $result->fetch_assoc()) {
+    if ($row['status'] === 'completed') {
+        $delivered[] = $row;
+    } elseif ($row['status'] === 'processing') {
+        $processing[] = $row;
+    } else if($row['status'] === 'cancelled'){
+        $cancelled[] = $row;
+    }
+}
+                            
+$stmt->close();
+
 // function that update the status after 3 day to delivery
 // backend hasan 21/12 
 // what is INTERVAL 3 DAY ? hay frdn lyom 21/12 btn2s 3 eyem mn date ya3ne bsir 18/12 .. 
-
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['updateProfile'])) {
 
@@ -1399,9 +1551,37 @@ $stmt->close();
                                     <button class="filter-btn" data-filter="processing">Processing</button>
                                     <button class="filter-btn" data-filter="cancelled">Cancelled</button>
                                 </div>
-                            </div>
-                            <p class="text-muted mb-4">View and manage all your clothing orders</p>
 
+                            </div>
+                            <!-- code s8er bootstrap llmaseg  -->
+                                    <?php if (isset($_GET['cancel_success'])): ?>
+                                    <div class="alert alert-success alert-dismissible fade show">
+                                        Order cancelled successfully!
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                    <?php endif; ?>
+                                    <!-- the buy masseg if sucsess or failure -->
+                                    <?php if (isset($_GET['buy_success'])): ?>
+                                <div class="alert alert-success alert-dismissible fade show">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Items added to cart successfully!
+                                <a href="cart.php" class="alert-link ms-2">View Cart (<?= $_GET['cart_count'] ?? '0' ?> items)</a>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                    <?php endif; ?>
+
+                                <?php if (isset($_GET['buy_error'])): ?>
+                                    <div class="alert alert-danger alert-dismissible fade show">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        Error adding items to cart. Please try again !
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                <?php endif; ?>
+
+                            <p class="text-muted mb-4">View and manage all your clothing orders</p>
+<!-- hasan backend 22/12 -->
+
+                            
                             <!-- Delivered Orders -->
                             <div class="order-category delivered-category" data-category="delivered">
                                 <div class="category-header">
@@ -1411,65 +1591,60 @@ $stmt->close();
                                         </div>
                                         <span>Delivered Orders</span>
                                     </div>
-                                    <div class="order-count delivered-count">8 Orders</div>
+                                    <div class="order-count delivered-count"><?= count($delivered)??0 ?> Orders</div>
                                 </div>
                                 <div class="category-body">
-                                    <!-- Order Item 1 -->
+                                    <?php
+                                    $i=0;
+                                    foreach($delivered as $deliv)
+                            {
+                                if($i>2)
+                                {
+                                    break;
+                                }
+                                    ?>
+                                    <!-- Order Item i -->
                                     <div class="order-item">
                                         <div class="product-image-small">
-                                            <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                                alt="Leather Jacket">
+                                            <img src="assets/images/<?= $deliv['filename'] ?>"
+                                                alt="<?= $deliv['product_name'] ?>">
                                         </div>
                                         <div class="order-info">
-                                            <div class="order-product-name">Premium Denim Jacket</div>
+                                            <div class="order-product-name"><?= $deliv['product_name'] ?></div>
                                             <div class="order-details">
-                                                <span class="order-id">#ST2456</span>
-                                                <span>Size: M | Color: Blue</span>
-                                                <span>Quantity: 1</span>
+                                                <span class="order-id">#ST<?= $deliv['order_id'] ?></span>
+                                                <span>Size: <?= $deliv['size'] ?> | Color: <?= $deliv['color'] ?></span>
+                                                <span>Quantity: <?= $deliv['quantity'] ?></span>
                                                 <span class="text-success"><i
-                                                        class="fas fa-check-circle me-1"></i>Delivered on Mar 5, 2023</span>
+                                                        class="fas fa-check-circle me-1"></i>Delivered <?= $deliv['delivered_date'] ?></span>
                                             </div>
                                         </div>
                                         <div class="order-dates">
-                                            <div class="order-date">Ordered: Mar 2, 2023</div>
-                                            <div class="order-date">Delivered: Mar 5, 2023</div>
-                                            <div class="order-status">$89.99</div>
+                                            <div class="order-date">Ordered: <?= $deliv['order_date'] ?></div>
+                                            <div class="order-date">Delivered: <?= $deliv['delivered_date'] ?></div>
+                                            <div class="order-status">$<?= $deliv['price'] ?></div>
                                         </div>
                                         <div class="order-actions">
-                                            
-                                            <button class="btn-action btn-track">Buy Again</button>
+                                            <!-- form nfs abel shwy.. -->
+                                            <form method="POST" style="display: inline;">
+                            <input type="hidden" name="order_id" value="<?= $deliv['order_id'] ?>">
+                            <button type="submit" name="buy_again" class="btn-action btn-track" 
+                onclick="return confirm('Add items from order #ST<?= $deliv['order_id'] ?> to your cart?')">
+            <i></i> Buy Again
+        </button>
+    </form>
                                         </div>
                                     </div>
-
-                                    <!-- Order Item 2 -->
-                                    <div class="order-item">
-                                        <div class="product-image-small">
-                                            <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                                alt="Casual Shirt">
-                                        </div>
-                                        <div class="order-info">
-                                            <div class="order-product-name">Casual Linen Shirt</div>
-                                            <div class="order-details">
-                                                <span class="order-id">#ST2459</span>
-                                                <span>Size: L | Color: Beige</span>
-                                                <span>Quantity: 2</span>
-                                                <span class="text-success"><i
-                                                        class="fas fa-check-circle me-1"></i>Delivered on Mar 15, 2023</span>
-                                            </div>
-                                        </div>
-                                        <div class="order-dates">
-                                            <div class="order-date">Ordered: Mar 13, 2023</div>
-                                            <div class="order-date">Delivered: Mar 15, 2023</div>
-                                            <div class="order-status">$90.00</div>
-                                        </div>
-                                        <div class="order-actions">
-                                            
-                                            <button class="btn-action btn-track">Buy Again</button>
-                                        </div>
-                                    </div>
+<?php 
+$i++;
+}
+                            
+                                ?>
+                                        
                                 </div>
                             </div>
-
+                                
+                            
                             <!-- Processing Orders -->
                             <div class="order-category processing-category" data-category="processing">
                                 <div class="category-header">
@@ -1479,60 +1654,53 @@ $stmt->close();
                                         </div>
                                         <span>Processing Orders</span>
                                     </div>
-                                    <div class="order-count processing-count">3 Orders</div>
+                                    <div class="order-count processing-count"><?= count($processing)??0 ?> Orders</div>
                                 </div>
                                 <div class="category-body">
                                     <!-- Order Item 1 -->
+                                    <?php 
+                                    $i=0;
+                                    foreach($processing as $process)
+                                    {
+                                        if($i>3)
+                                        {
+                                            break;
+                                        }
+                                    ?>
                                     <div class="order-item">
                                         <div class="product-image-small">
-                                            <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                                alt="Summer Dress">
+                                            <img src="assets/images/<?= $process['filename'] ?>"
+                                                alt="<?= $process['product_name'] ?>">
                                         </div>
                                         <div class="order-info">
-                                            <div class="order-product-name">Summer Floral Dress</div>
+                                            <div class="order-product-name"><?= $process['product_name'] ?></div>
                                             <div class="order-details">
-                                                <span class="order-id">#ST2458</span>
-                                                <span>Size: S | Color: Multicolor</span>
-                                                <span>Quantity: 1</span>
-                                                <span class="text-warning"><i class="fas fa-clock me-1"></i>Expected delivery: Mar 12, 2023</span>
+                                                <span class="order-id">#ST<?= $process['order_id'] ?></span>
+                                                <span>Size: <?= $process['size'] ?> | Color: <?= $process['color'] ?></span>
+                                                <span>Quantity: <?= $process['quantity'] ?></span>
+                                                <span class="text-warning"><i class="fas fa-clock me-1"></i>Expected delivery:<?= $process['processing_date'] ?></span>
                                             </div>
                                         </div>
                                         <div class="order-dates">
-                                            <div class="order-date">Ordered: Mar 6, 2023</div>
-                                            <div class="order-date">Expected: Mar 12, 2023</div>
-                                            <div class="order-status">$65.50</div>
+                                            <div class="order-date">Ordered: <?= $process['order_date'] ?></div>
+                                            <div class="order-date">Expected: <?= $process['processing_date'] ?></div>
+                                            <div class="order-status">$<?= $process['price'] ?></div>
                                         </div>
                                         <div class="order-actions">
-                                            
-                                            <button class="btn-action btn-cancel">Cancel</button>
+                                            <!-- ha form lt3ml handle llphp + tosl ljs  -->
+                                                <form method="POST" action="" style="display: inline;">
+                                    <input type="hidden" name="order_id" value="<?= $process['order_id'] ?>">
+                                                    <button type="submit" name="cancel_order" class="btn-action btn-cancel" 
+                                                onclick="return confirm('Are you sure you want to cancel order #ST<?= $process['order_id'] ?>?')">
+                                                                    Cancel
+                                                            </button>
+    </form>
                                         </div>
                                     </div>
-
-                                    <!-- Order Item 2 -->
-                                    <div class="order-item">
-                                        <div class="product-image-small">
-                                            <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                                alt="Winter Coat">
-                                        </div>
-                                        <div class="order-info">
-                                            <div class="order-product-name">Wool Blend Coat</div>
-                                            <div class="order-details">
-                                                <span class="order-id">#ST2460</span>
-                                                <span>Size: M | Color: Black</span>
-                                                <span>Quantity: 1</span>
-                                                <span class="text-warning"><i class="fas fa-clock me-1"></i>Expected delivery: Mar 15, 2023</span>
-                                            </div>
-                                        </div>
-                                        <div class="order-dates">
-                                            <div class="order-date">Ordered: Mar 7, 2023</div>
-                                            <div class="order-date">Expected: Mar 15, 2023</div>
-                                            <div class="order-status">$129.99</div>
-                                        </div>
-                                        <div class="order-actions">
-                                            
-                                            <button class="btn-action btn-cancel">Cancel</button>
-                                        </div>
-                                    </div>
+                                        <?php
+                                        $i++;
+                                        }
+                                        ?>
                                 </div>
                             </div>
 
@@ -1545,35 +1713,51 @@ $stmt->close();
                                         </div>
                                         <span>Cancelled Orders</span>
                                     </div>
-                                    <div class="order-count cancelled-count">4 Orders</div>
+                                    <div class="order-count cancelled-count"><?= count($cancelled)??0 ?> Orders</div>
                                 </div>
                                 <div class="category-body">
                                     <!-- Order Item 1 -->
+                                    <?php
+                                    $i=0;
+                                    foreach($cancelled as $cancel)
+                                    {
+                                        if($i>2)
+                                        {
+                                            break;
+                                        }
+                                    ?>
                                     <div class="order-item">
                                         <div class="product-image-small">
-                                            <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
-                                                alt="White Sneakers">
+                                            <img src="assets/images/<?= $cancel['filename'] ?>"
+                                                alt="<?= $cancel['product_name'] ?>">
                                         </div>
                                         <div class="order-info">
-                                            <div class="order-product-name">Classic White Sneakers</div>
+                                            <div class="order-product-name"><?= $cancel['product_name'] ?></div>
                                             <div class="order-details">
-                                                <span class="order-id">#ST2457</span>
-                                                <span>Size: 42 | Color: White</span>
-                                                <span>Quantity: 1</span>
+                                                <span class="order-id">#ST<?= $cancel['order_id'] ?></span>
+                                                <span>Size: <?= $cancel['size'] ?> | Color: <?= $cancel['color'] ?></span>
+                                                <span>Quantity: <?= $cancel['quantity'] ?></span>
                                                 <span class="text-danger"><i
-                                                        class="fas fa-times-circle me-1"></i>Cancelled on Mar 9, 2023</span>
+                                                        class="fas fa-times-circle me-1"></i>Ordered on <?= $cancel['order_date'] ?></span>
                                             </div>
                                         </div>
                                         <div class="order-dates">
-                                            <div class="order-date">Ordered: Mar 8, 2023</div>
-                                            <div class="order-date">Cancelled: Mar 9, 2023</div>
-                                            <div class="order-status">$79.99</div>
+                                            <div class="order-date">Ordered: <?= $cancel['order_date'] ?></div>
+                                            
+                                            <div class="order-status">$<?= $cancel['price'] ?></div>
                                         </div>
                                         <div class="order-actions">
                                             
-                                            <button class="btn-action btn-track">Reorder</button>
+                                        <form method="POST" style="display: inline;">
+                                        <input type="hidden" name="order_id" value="<?= $cancel['order_id'] ?>">
+                                        <button type="submit" name="buy_again" class="btn-action btn-track" 
+                                            onclick="return confirm('Add items from order #ST<?= $cancel['order_id'] ?> to your cart?')">
+                                            <i class="fas fa-shopping-cart me-1"></i> Reorder
+                                        </button>
+                                                </form>
                                         </div>
                                     </div>
+                                    <?php $i++; } ?>
                                 </div>
                             </div>
                         </div>
@@ -1606,8 +1790,9 @@ $stmt->close();
                             <p class="text-muted mb-4">You will need to sign in again to access your dashboard.</p>
 
                             <div class="d-flex justify-content-center gap-3">
-                                <button class="btn btn-update" id="cancel-signout">Cancel</button>
-                                <button class="btn btn-confirm-signout">Sign Out</button>
+                                <form method="post">
+                                <button class="btn btn-confirm-signout" name="SignOut">Sign Out</button>
+                                        </form>
                             </div>
                         </div>
                     </div>
