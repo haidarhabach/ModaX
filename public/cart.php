@@ -1,6 +1,6 @@
 <?php
 // 20/12/hasan all backend :O
-include 'db.php';
+include '../includes/db.php';
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php'); 
@@ -119,7 +119,7 @@ $cartTotal=0;
 //  ];
 $cart=$_SESSION['cart'] ?? [];
 $total=0;
-$shipping_discound=["United Status"=>20 , "United Kingdom"=>20 , "Lebanon"=>50 , "Canada"=>20 , "Syria"=>50];
+$shipping_discound=["United States"=>20 , "United Kingdom"=>20 , "Lebanon"=>50 , "Canada"=>20 , "Syria"=>50];
 if (isset($_GET['remove'])) {
     $remove_id = (int)$_GET['remove']; 
     if (!empty($_SESSION['cart'])) {
@@ -138,7 +138,7 @@ if (isset($_GET['remove'])) {
 ?>
 
 <head>
-    <title>Home</title>
+    <title>Cart</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
@@ -755,9 +755,14 @@ if (isset($_GET['remove'])) {
                 </div>
 
                 <div class="right-links d-flex">
-                    <a href="#" class="me-3">Help & FAQs</a>
-                    <a href="#" class="me-3">My Account</a>
-                    <a href="login.php" class="me-3">sign in</a>
+                    <a href="contact.php" class="me-3">Help & FAQs</a>
+                    <a href="myAccount.php" class="me-3">My Account</a>
+                    <a href="login.php" <?php 
+                    if (isset($_SESSION['user_id']) || isset($_SESSION['admin_id'])) {
+                       echo "hidden";
+                    }
+                    ?>
+                    class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -781,16 +786,14 @@ if (isset($_GET['remove'])) {
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="index.php">
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="products.php">Shop</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
+                    
 
                     <li class="nav-item">
                         <a class="nav-link" href="cart.php">Cart</a>
@@ -807,9 +810,7 @@ if (isset($_GET['remove'])) {
 
                 <!-- Header Icons -->
                 <div class="d-flex align-items-center">
-                    <a href="#" class="header-icon" data-bs-toggle="modal" data-bs-target="#searchModal">
-                        <i class="fas fa-search"></i>
-                    </a>
+                    
 
                     <div class="icon-container">
                         <a href="cart.php" class="header-icon">
@@ -826,25 +827,7 @@ if (isset($_GET['remove'])) {
         </div>
     </nav>
 
-    <!-- Search Modal -->
-    <div class="modal fade" id="searchModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Search Products</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="What are you looking for?">
-                            <button class="btn btn-primary" type="submit">Search</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 <!-- hasan remove backend  -->
 
 
@@ -861,47 +844,48 @@ if (isset($_GET['remove'])) {
             <div class="cart-items-container" style="max-height: 400px; overflow-y: auto;">
                 <ul class="list-group list-group-flush">
 
-                    <?php
+                            <?php
                     $total = 0;
                     if (!empty($_SESSION['cart'])):
                         foreach ($_SESSION['cart'] as $item):
                             $itemTotal = $item['price'] * $item['qty'];
-                            $cartTotal += $itemTotal;
-                            ?>
-
-                            <li class="list-group-item border-0">
-                                <div class="row align-items-center g-3">
-                                    <div class="col-3">
-                                        <img src="<?= $item['image'] ?>" class="img-fluid rounded" alt="<?= $item['name'] ?>">
-                                    </div>
-
-                                    <div class="col-9">
-                                        <a href="#" class="text-decoration-none text-dark fw-semibold d-block mb-1">
-                                            <?= $item['name'] ?>
-                                        </a>
-
-                                        <span class="text-muted small">
-                                            <?= $item['qty'] ?> x $<?= number_format($item['price'], 2) ?>
-                                        </span>
-                                        
-                                        <a href="?remove=<?= $item['id'] ?>" class="btn btn-sm btn-outline-danger mt-1">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-
-                        <?php endforeach; else: ?>
-
-                        <li class="list-group-item text-center py-4">
-                            <em>Your cart is empty</em>
-                        </li>
-
+                            $total += $itemTotal;
+                    ?>
+                    <li class="list-group-item border-0">
+                        <div class="row align-items-center g-3">
+                            <div class="col-3">
+                                <img src="assets/images/<?= htmlspecialchars($item['photo']) ?>" class="img-fluid rounded" alt="<?= htmlspecialchars($item['name']) ?>">
+                            </div>
+                            <div class="col-9">
+                                <a href="#" class="text-decoration-none text-dark fw-semibold d-block mb-1">
+                                    <?= htmlspecialchars($item['name']) ?>
+                                </a>
+                                <span class="text-muted small">
+                                    <?= htmlspecialchars($item['qty']) ?> x $<?= number_format($item['price'], 2) ?>
+                                </span>
+                                <!-- why use this ? to dont forget the get reload page with all 
+                                get only add the remove to get-->
+                                <a href="<?= $_SERVER['PHP_SELF'] ?>?remove=<?= $item['id'] ?>"
+                        class="btn btn-sm btn-outline-danger mt-1">
+                            <i class="fas fa-trash"></i>
+                                    </a>
+                            </div>
+                        </div>
+                    </li>
+                    <?php
+                        endforeach;
+                    else:
+                    ?>
+                    <li class="list-group-item text-center py-4">
+                        <em>Your cart is empty</em>
+                    </li>
                     <?php endif; ?>
-
                 </ul>
             </div>
 
+
+                
+     
             <!-- Cart Summary -->
             <div class="cart-summary border-top bg-light p-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1167,8 +1151,8 @@ $shippingTotal = $_SESSION['shipping'] ?? 0.00;
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <h4>GET IN TOUCH</h4>
                     <p>
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
-                        on (+1) 96 716 6879
+                        Any questions? Let us know in store at 8th floor, Ouzaii, beirut, lebanon or call us
+                        on (+961) 01 234 567
                     </p>
                     <div class="social-icons pt-3">
                         <a href="#">
