@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../db.php';
+include '../includes/db.php';
     $admin_id=$_SESSION['admin_id'] ?? '';
     $admin_name=$_SESSION['admin_name'] ?? ""; 
     if(!isset($admin_id)){header("Location:login.php");}
@@ -103,7 +103,7 @@ include '../db.php';
 
         //handle image upload
         if(isset($_FILES['product_image'])&& $_FILES['product_image']['error']===0){
-            $target_dir="../assets/images/";
+            $target_dir="../public/assets/images/";
             if(!is_dir($target_dir)){
                 mkdir($target_dir,0777,true);
             }
@@ -184,16 +184,16 @@ include '../db.php';
 <html>
 
 <head>
-    <title>Dashboard</title>
+    <title>Admin Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
+    <link rel="icon" type="image/png" href="../public/assets/images/icons/favicon.png">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../public/assets/css/main.css">
     <style>
         :root {
             --primary-color: #0d6efd;
@@ -814,24 +814,24 @@ include '../db.php';
             </button>
 
             <!--Navigation menu-->
+            <!--
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="../public/index.php" >
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="products.php">Shop</a>
+                        <a class="nav-link" href="../public/products.php">Shop</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
+                    \
                 </ul>
 
                 
             </div>
+    -->
         </div>
     </nav>
 
@@ -979,7 +979,7 @@ include '../db.php';
                                 <?php foreach ($top_products as $product): ?>
                                 <div class="product-item">
                                     <div class="product-image-container">
-                                        <img src="<?php echo $product['filename'] ? '../assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>">
+                                        <img src="<?php echo $product['filename'] ? '../public/assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>">
 
                                         <span class="availability-badge <?php 
                                             if ($product['stock'] > 10) echo 'in-stock';
@@ -1058,7 +1058,7 @@ include '../db.php';
                                     <?php foreach ($all_products as $product): ?>
                                     <div class="product-item">
                                         <div class="product-image-container">
-                                            <img src="<?php echo $product['filename'] ? '../assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                            <img src="<?php echo $product['filename'] ? '../public/assets/images/' . htmlspecialchars($product['filename']) : 'https://via.placeholder.com/400x300?text=No+Image'; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
                                             <span class="availability-badge <?php 
                                                 if ($product['stock'] > 10) echo 'in-stock';
                                                 elseif ($product['stock'] > 0) echo 'low-stock';
