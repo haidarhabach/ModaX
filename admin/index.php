@@ -1,8 +1,8 @@
 <?php
 session_start();
 include '../includes/db.php';
-    $admin_id=$_SESSION['admin_id'];
-    $admin_name=$_SESSION['admin_name'];
+    $admin_id =$_SESSION['admin_id'];
+    $admin_name =$_SESSION['admin_name'];
 
     $stats=[];
 
@@ -792,12 +792,12 @@ include '../includes/db.php';
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="../public/index.php" >
                             Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="products.php">Shop</a>
+                        <a class="nav-link" href="../public/products.php">Shop</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="blog.php">Blog</a>
