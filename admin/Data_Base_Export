@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: Dec 21, 2025 at 08:49 PM
+-- Generation Time: Dec 22, 2025 at 08:13 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,7 +40,11 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `username`, `password_hash`, `created_at`, `email`) VALUES
-(1, 'Hasan', '$2y$10$tGdTCCgg79I.LYgd7OvB9uqUiIf4wTMXr20Q7diGPvqsQhBhOs4ZW', '2025-11-22 18:01:59', 'Hasan123@gmail.com');
+(1, 'Hasan', '$2y$10$tGdTCCgg79I.LYgd7OvB9uqUiIf4wTMXr20Q7diGPvqsQhBhOs4ZW', '2025-11-22 18:01:59', 'Hasan123@gmail.com'),
+(2, 'Haidar', '$10$tGdTCCgg79I.LYgd7OvB9uqUiIf4wTMXr20Q7diGPvqsQhBhOs4ZW', '2025-11-22 18:01:59', 'Haidar123@gmail.com'),
+(3, 'Hammoud', '$10$tGdTCCgg79I.LYgd7OvB9uqUiIf4wTMXr20Q7diGPvqsQhBhOs4ZW', '2025-11-22 18:01:59', 'Hammoud123@gmail.com'),
+(4, 'Abdallah', '$10$tGdTCCgg79I.LYgd7OvB9uqUiIf4wTMXr20Q7diGPvqsQhBhOs4ZW', '2025-11-22 18:01:59', 'Abdallah123@gmail.com'),
+(5, '', '', '2025-12-22 18:03:40', '');
 
 -- --------------------------------------------------------
 
@@ -95,30 +99,36 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `total`, `status`, `created_at`, `shipping_address`, `payment_method`, `shipping`, `discount`) VALUES
-(1, 1, 191.86, '', '2025-12-10 16:27:21', NULL, 'card', 50.00, 20.00),
-(2, 1, 105.93, 'processing', '2025-12-20 16:31:02', NULL, 'card', 0.00, 0.00),
-(3, 1, 90.62, 'processing', '2025-12-20 16:31:32', NULL, 'card', 20.00, 0.00),
-(4, 1, 150.00, 'processing', '2025-12-20 16:36:51', '50', 'card', 0.00, 0.00),
-(5, 1, 25.50, 'processing', '2025-12-20 16:38:28', '0', 'card', 0.00, 0.00),
-(6, 1, 75.00, 'processing', '2025-12-20 16:42:42', 'Syria', 'card', 0.00, 0.00),
-(7, 1, 125.00, 'processing', '2025-12-20 16:43:36', 'Lebanon', 'card', 50.00, 0.00),
-(8, 1, 232.00, 'processing', '2025-12-20 16:46:34', 'Lebanon', 'card', 0.00, 20.00),
-(9, 1, 0.00, 'processing', '2025-12-20 16:48:10', 'Lebanon', 'card', 0.00, 0.00),
-(10, 1, 35.31, 'processing', '2025-12-20 16:49:16', 'Lebanon', 'card', 0.00, 0.00),
-(11, 1, 121.24, 'processing', '2025-12-21 14:30:21', '', 'paypal', 0.00, 20.00),
-(12, 1, 352.80, 'processing', '2025-12-21 14:47:31', '', 'paypal', 0.00, 20.00),
-(13, 1, 25.50, 'processing', '2025-12-21 14:53:20', '', 'card', 0.00, 0.00),
-(14, 1, 152.98, 'processing', '2025-12-21 15:20:14', '', 'card', 0.00, 5.00),
-(15, 1, 35.31, 'processing', '2025-12-21 15:57:03', '', 'card', 0.00, 0.00),
-(16, 1, 35.31, 'processing', '2025-12-21 15:58:08', '', 'paypal', 0.00, 0.00),
-(17, 1, 35.31, 'processing', '2025-12-21 15:58:13', '', 'paypal', 0.00, 0.00),
-(18, 1, 205.00, 'processing', '2025-12-21 16:01:10', '', 'card', 0.00, 20.00),
-(19, 1, 205.00, 'processing', '2025-12-21 16:01:14', '', 'card', 0.00, 20.00),
-(20, 1, 56.88, 'processing', '2025-12-21 16:07:52', '', 'paypal', 0.00, 0.00),
-(21, 1, 280.00, '', '2025-12-11 16:08:25', 'Lebanon', 'paypal', 50.00, 20.00),
-(22, 1, 105.93, '', '2025-12-11 16:18:20', 'Lebanon', 'card', 0.00, 0.00),
-(23, 1, 173.70, 'completed', '2025-12-15 16:55:59', 'Lebanon', 'card', 0.00, 0.00),
-(24, 1, 25.50, 'processing', '2025-12-21 18:24:42', 'Lebanon', 'card', 0.00, 0.00);
+(1, 1, 191.86, '', '2025-12-10 16:27:21', 'Ouzaii , 123 Fashion Street', 'card', 50.00, 20.00),
+(2, 1, 105.93, 'cancelled', '2025-12-20 16:31:02', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(3, 1, 90.62, 'cancelled', '2025-12-20 16:31:32', 'Ouzaii , 123 Fashion Street', 'card', 20.00, 0.00),
+(4, 1, 150.00, 'cancelled', '2025-12-20 16:36:51', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(5, 1, 25.50, 'completed', '2025-12-20 16:38:28', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(6, 1, 75.00, 'completed', '2025-12-20 16:42:42', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(7, 1, 125.00, 'completed', '2025-12-20 16:43:36', 'Ouzaii , 123 Fashion Street', 'card', 50.00, 0.00),
+(8, 1, 232.00, 'cancelled', '2025-12-20 16:46:34', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 20.00),
+(9, 1, 0.00, 'processing', '2025-12-20 16:48:10', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(10, 1, 35.31, 'cancelled', '2025-12-20 16:49:16', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(11, 1, 121.24, 'cancelled', '2025-12-21 14:30:21', 'Ouzaii , 123 Fashion Street', 'paypal', 0.00, 20.00),
+(12, 1, 352.80, 'cancelled', '2025-12-21 14:47:31', 'Ouzaii , 123 Fashion Street', 'paypal', 0.00, 20.00),
+(13, 1, 25.50, 'cancelled', '2025-12-21 14:53:20', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(14, 1, 152.98, 'cancelled', '2025-12-21 15:20:14', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 5.00),
+(15, 1, 35.31, 'processing', '2025-12-21 15:57:03', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(16, 1, 35.31, 'cancelled', '2025-12-21 15:58:08', 'Ouzaii , 123 Fashion Street', 'paypal', 0.00, 0.00),
+(17, 1, 35.31, 'processing', '2025-12-21 15:58:13', 'Ouzaii , 123 Fashion Street', 'paypal', 0.00, 0.00),
+(18, 1, 205.00, 'processing', '2025-12-21 16:01:10', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 20.00),
+(19, 1, 205.00, 'processing', '2025-12-21 16:01:14', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 20.00),
+(20, 1, 56.88, 'processing', '2025-12-21 16:07:52', 'Ouzaii , 123 Fashion Street', 'paypal', 0.00, 0.00),
+(21, 1, 280.00, 'cancelled', '2025-12-11 16:08:25', 'Ouzaii , 123 Fashion Street', 'paypal', 50.00, 20.00),
+(22, 1, 105.93, '', '2025-12-11 16:18:20', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(23, 1, 173.70, 'completed', '2025-12-15 16:55:59', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(24, 1, 25.50, 'cancelled', '2025-12-21 18:24:42', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(25, 1, 49.92, 'cancelled', '2025-12-21 20:23:23', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(26, 1, 25.50, 'cancelled', '2025-12-22 10:56:00', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(27, 1, 252.60, 'processing', '2025-12-22 17:29:11', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(28, 1, 96.48, 'cancelled', '2025-12-22 17:30:30', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 20.00),
+(29, 1, 49.92, 'processing', '2025-12-22 17:33:28', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00),
+(30, 1, 16.64, 'processing', '2025-12-22 18:37:58', 'Ouzaii , 123 Fashion Street', 'card', 0.00, 0.00);
 
 -- --------------------------------------------------------
 
@@ -162,7 +172,13 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `quan
 (18, 21, 38, 'Classic Trench Coat', 4, 75.00, 'blue', 'm'),
 (19, 22, 36, 'Herschel supply', 3, 35.31, '', ''),
 (20, 23, 49, 'Mini silver mesh watch', 2, 86.85, '', ''),
-(21, 24, 37, 'Only Check Trouser', 1, 25.50, '', '');
+(21, 24, 37, 'Only Check Trouser', 1, 25.50, '', ''),
+(22, 25, 35, 'Esprit Ruffle Shirt', 3, 16.64, '', ''),
+(23, 26, 37, 'Only Check Trouser', 1, 25.50, '', ''),
+(24, 27, 46, 'Herschel supply', 4, 63.15, 'blue', 's'),
+(25, 28, 35, 'Esprit Ruffle Shirt', 7, 16.64, 'grey', 'm'),
+(26, 29, 35, 'Esprit Ruffle Shirt', 3, 16.64, 'blue', 'm'),
+(27, 30, 35, 'Esprit Ruffle Shirt', 1, 16.64, 'white', 'm');
 
 -- --------------------------------------------------------
 
@@ -188,22 +204,24 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `category_id`, `name`, `description`, `price`, `sale_price`, `stock`, `created_at`, `type`, `color`) VALUES
-(35, 1, 'Esprit Ruffle Shirt', 'Esprit Ruffle Shirt love', 16.64, 16.64, 10, '2025-11-27 20:06:50', 'women', 'white'),
+(35, 1, 'Esprit Ruffle Shirt', 'Esprit Ruffle Shirt love', 16.64, 16.64, 3, '2025-11-27 20:06:50', 'women', 'white'),
 (36, 1, 'Herschel supply', 'Herschel supply', 35.31, 35.31, 10, '2025-11-27 20:06:50', 'women', 'white'),
 (37, 1, 'Only Check Trouser', 'Only Check Trouser', 25.50, 25.50, 10, '2025-11-27 20:06:50', 'men', 'blue'),
 (38, 1, 'Classic Trench Coat', 'Classic Trench Coat', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'women', NULL),
 (39, 1, 'Front Pocket Jumper', 'Front Pocket Jumper', 34.75, 34.75, 10, '2025-11-27 20:06:50', 'women', NULL),
-(40, 1, 'Vintage Inspired Classic', 'Vintage Inspired Classic', 93.20, 93.20, 10, '2025-11-27 20:06:50', 'watches', NULL),
+(40, 1, 'Vintage Inspired Classic', 'Vintage Inspired Classic', 93.20, 93.20, 0, '2025-11-27 20:06:50', 'watches', NULL),
 (41, 1, 'Shirt in Stretch Cotton', 'Shirt in Stretch Cotton', 52.66, 52.66, 10, '2025-11-27 20:06:50', 'women', NULL),
 (42, 1, 'Pieces Metallic Printed', 'Pieces Metallic Printed', 18.96, 18.96, 10, '2025-11-27 20:06:50', 'women', NULL),
 (43, 1, 'Converse All Star Hi Plimsolls', 'Converse All Star Hi Plimsolls', 75.00, 75.00, 10, '2025-11-27 20:06:50', 'shoes', NULL),
 (44, 1, 'Femme T-Shirt In Stripe', 'Femme T-Shirt In Stripe', 25.85, 25.85, 10, '2025-11-27 20:06:50', 'women', NULL),
 (45, 1, 'Herschel supply', 'Herschel supply', 63.16, 63.16, 10, '2025-11-27 20:06:50', 'men', NULL),
-(46, 1, 'Herschel supply', 'Herschel supply', 63.15, 63.15, 10, '2025-11-27 20:06:50', 'men', NULL),
+(46, 1, 'Herschel supply', 'Herschel supply', 63.15, 63.15, 6, '2025-11-27 20:06:50', 'men', NULL),
 (47, 1, 'T-shirt with sleeve', 'T-shirt with sleeve', 18.49, 18.49, 10, '2025-11-27 20:06:50', 'women', NULL),
 (48, 1, 'Pretty little thing', 'Pretty little thing', 54.79, 54.79, 10, '2025-11-27 20:06:50', 'women', NULL),
 (49, 1, 'Mini silver mesh watch', 'Mini silver mesh watch', 86.85, 86.85, 10, '2025-11-27 20:06:50', 'watch', NULL),
-(50, 1, 'Square neck back', 'Square neck back', 29.64, 29.64, 10, '2025-10-27 20:06:50', 'women', NULL);
+(50, 1, 'Square neck back', 'Square neck back', 29.64, 29.64, 10, '2025-10-27 20:06:50', 'women', NULL),
+(70, 1, 'kanze ', 'kanze asleye ', 100.00, 10.00, 100, '2025-12-22 18:12:59', 'men', 'red'),
+(71, 1, 'kanze ', 'wqwqewqewq', 100.00, 10.00, 10, '2025-12-22 18:14:34', 'men', 'red');
 
 -- --------------------------------------------------------
 
@@ -239,7 +257,9 @@ INSERT INTO `product_images` (`id`, `product_id`, `filename`, `is_main`, `create
 (47, 47, 'product-13.jpg', 1, '2025-11-27 20:19:24'),
 (48, 48, 'product-14.jpg', 1, '2025-11-27 20:19:24'),
 (49, 49, 'product-15.jpg', 1, '2025-11-27 20:19:24'),
-(50, 50, 'product-16.jpg', 1, '2025-11-27 20:19:24');
+(50, 50, 'product-16.jpg', 1, '2025-11-27 20:19:24'),
+(69, 70, '1766427179_download.png', 1, '2025-12-22 18:12:59'),
+(70, 71, '1766427274_Blue and Purple Youtube Thumbnail Background .png', 1, '2025-12-22 18:14:34');
 
 -- --------------------------------------------------------
 
@@ -252,11 +272,21 @@ CREATE TABLE `stock_notifications` (
   `product_id` int(11) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `category` varchar(50) DEFAULT NULL,
-  `color` varchar(50) DEFAULT NULL,
   `type` varchar(50) DEFAULT NULL,
   `notified` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `stock_notifications`
+--
+
+INSERT INTO `stock_notifications` (`id`, `product_id`, `email`, `category`, `type`, `notified`, `created_at`) VALUES
+(1, 35, 'Hasan1233@outlook.com', 'Banners', 'women', 1, '2025-12-22 17:55:40'),
+(2, 35, 'HassanJakmara123@gmail.com', 'Banners', 'women', 1, '2025-12-22 17:57:00'),
+(3, 35, 'haida123@gmail.com', 'Banners', 'women', 1, '2025-12-22 18:01:05'),
+(4, 35, 'hamoud123@gmail.com', 'Banners', 'women', 1, '2025-12-22 18:01:17'),
+(5, 35, 'Hasan1233@outlook.com', 'Banners', 'women', 1, '2025-12-22 18:38:32');
 
 -- --------------------------------------------------------
 
@@ -278,7 +308,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `phone`, `created_at`) VALUES
-(1, 'Hasan', 'Hasan123@outlook.com', '$2y$10$W5aY9gaLqPXVGLR5AnxOmeJUwWYiAdXq2AypwVoHiNJrBGXnT697a', '71123456', '2025-11-22 18:04:34'),
+(1, 'Hasan Jakmara', 'Hasan123@outlook.com', '$2y$10$W5aY9gaLqPXVGLR5AnxOmeJUwWYiAdXq2AypwVoHiNJrBGXnT697a', '+961 78 765 159', '2025-11-22 18:04:34'),
 (4517992, 'a', 'Hasan12444433@outlook.com', 'aaa1', '123456', '2025-11-24 20:18:50'),
 (9902305, 'a', 'Hasan142444433@outlook.com', '$2y$10$1WsNAyLGPSer6m43uki7XO.D.O5FFfLRdAWeeFVdVtN621c5cywyW', '123456', '2025-11-24 20:21:26');
 
@@ -349,7 +379,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -361,31 +391,31 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `stock_notifications`
 --
 ALTER TABLE `stock_notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
