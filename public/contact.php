@@ -4,7 +4,7 @@
 session_start();
 ?>
 <head>
-    <title>Home</title>
+    <title>Contact</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
@@ -605,7 +605,7 @@ session_start();
                 </div>
 
                 <div class="right-links d-flex">
-                    <a href="#" class="me-3">Help & FAQs</a>
+                    <a href="../public/contact.php" class="me-3">Help & FAQs</a>
                     <a href="#" class="me-3">My Account</a>
                     <a href="login.php" class="me-3">sign in</a>
                 </div>
@@ -631,7 +631,7 @@ session_start();
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="index.php" >
                             Home
                         </a>
                     </li>
