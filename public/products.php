@@ -4,13 +4,7 @@
     <?php
 session_start();
 include '../includes/db.php';
-// $_SESSION['cart'][] = [
-//   'id' => 1,
-//   'name' => 'White Shirt Pleat',
-//   'price' => 19.00,
-//   'qty' => 1,
-//   'image' => 'assets/images/item-cart-01.jpg'
-//  ];
+
 
 if (isset($_GET['remove'])) {
     $remove_id = $_GET['remove'];
@@ -404,8 +398,13 @@ if (isset($_GET['remove'])) {
 
                 <div class="right-links d-flex">
                     <a href="../public/contact.php" class="me-3">Help & FAQs</a>
-                    <a href="#" class="me-3">My Account</a>
-                    <a href="login.php" class="me-3">sign in</a>
+                    <a href="myaccount.php" class="me-3">My Account</a>
+                    <a href="login.php" <?php 
+                    if (isset($_SESSION['user_id']) || isset($_SESSION['admin_id'])) {
+                       echo "hidden";
+                    }
+                    ?>
+                    class="me-3">sign in</a>
                 </div>
             </div>
         </div>
@@ -436,9 +435,7 @@ if (isset($_GET['remove'])) {
                     <li class="nav-item">
                         <a class="nav-link" href="products.php">Shop</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
+                    
 
                     <li class="nav-item">
                         <a class="nav-link" href="cart.php">Cart</a>
@@ -455,9 +452,7 @@ if (isset($_GET['remove'])) {
 
                 <!-- Header Icons -->
                 <div class="d-flex align-items-center">
-                    <a href="#" class="header-icon" data-bs-toggle="modal" data-bs-target="#searchModal">
-                        <i class="fas fa-search"></i>
-                    </a>
+                    
 
                     <div class="icon-container">
                         <a href="cart.php" class="header-icon">
@@ -474,25 +469,7 @@ if (isset($_GET['remove'])) {
         </div>
     </nav>
 
-    <!-- Search Modal -->
-    <div class="modal fade" id="searchModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Search Products</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="What are you looking for?">
-                            <button class="btn btn-primary" type="submit">Search</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Cart Sidebar-->
 
@@ -877,8 +854,8 @@ while ($row = $result->fetch_assoc()) {
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <h4>GET IN TOUCH</h4>
                     <p>
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
-                        on (+1) 96 716 6879
+                        Any questions? Let us know in store at 8th floor, Ouzaii, beirut, lebanon or call us
+                        on (+961) 01 234 567
                     </p>
                     <div class="social-icons pt-3">
                         <a href="#">
@@ -1037,4 +1014,3 @@ while ($row = $result->fetch_assoc()) {
 </body>
 
 </html>
-
