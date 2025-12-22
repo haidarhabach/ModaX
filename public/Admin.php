@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include '../includes/db.php';
 $stmt = $connect->prepare("select id from products");
     $stmt->execute();
     $result=$stmt->get_result();
