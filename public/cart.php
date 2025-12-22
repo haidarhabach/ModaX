@@ -5,20 +5,17 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php'); 
     exit;
 }
-include 'db.php';
+include '../includes/db.php';
 $coupon_cart = ["hasan"=>20 , "haidar"=>20 , "hammoud"=>10,"abdallah"=>5];
-$_SESSION['active_coupns']=count($coupon_cart);
 if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
 
-    $cartss = json_decode($_POST['cart'], true); // to get by name whe use the true !!
+    $cart = json_decode($_POST['cart'], true); // to get by name !!
     
-    if(empty($cartss))
+    if(empty($cart))
     {
         echo "error";
         exit;
     }
-
-
 
     $cartTotal = (float) $_POST['cartTotal'];
     
@@ -32,18 +29,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['checkout'])) {
     
     $total = ($cartTotal > 100 ? $cartTotal : $cartTotal + $shippingTotal) - $discountTotal;
 
-    $stmt = $connect->prepare("INSERT INTO orders (status,user_id,total,shipping_address, shipping, discount, payment_method, created_at) VALUES ('Processing',? , ?,?, ?, ?, ?, NOW())");
+    $stmt = $connect->prepare("INSERT INTO orders (user_id,total,shipping_address, shipping, discount, payment_method, created_at) VALUES (? , ?,?, ?, ?, ?, NOW())");
     $stmt->bind_param("idsdds",$_SESSION['user_id'],$total,$shipping_country, $shippingTotal, $discountTotal, $paymentMethod);
     $stmt->execute();
     $order_id = $stmt->insert_id;
     $stmt->close();
     // save order item to see the status 
-    foreach($cartss as $item){
-
-    $size = $item['size'];
-    $color= $item['color'];
-        $stmt = $connect->prepare("INSERT INTO order_items (size,color,order_id, product_id, quantity, product_name, price) VALUES (?, ?, ? ,?, ?, ?, ?)");
-        $stmt->bind_param("ssiiisd",$size,$color, $order_id, $item['id'], $item['qty'],$item['name'], $item['price']);
+    foreach($cart as $item){
+        $stmt = $connect->prepare("INSERT INTO order_items (order_id, product_id, quantity, product_name, price) VALUES (? ,?, ?, ?, ?)");
+        $stmt->bind_param("iiisd", $order_id, $item['id'], $item['qty'],$item['name'], $item['price']);
         $stmt->execute();
         $stmt->close();
     }
@@ -122,7 +116,7 @@ if (isset($_GET['remove'])) {
 ?>
 
 <head>
-    <title>Home</title>
+    <title>Cart</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="assets/images/icons/favicon.png">
@@ -739,7 +733,7 @@ if (isset($_GET['remove'])) {
                 </div>
 
                 <div class="right-links d-flex">
-                    <a href="#" class="me-3">Help & FAQs</a>
+                    <a href="../public/contat.php" class="me-3">Help & FAQs</a>
                     <a href="#" class="me-3">My Account</a>
                     <a href="login.php" class="me-3">sign in</a>
                 </div>
@@ -765,7 +759,7 @@ if (isset($_GET['remove'])) {
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link" href="index.php" >
                             Home
                         </a>
                     </li>
@@ -929,7 +923,7 @@ if (isset($_GET['remove'])) {
                     <!-- Cart with Items -->
                     <div id="cartWithItems" class="cart-container fade-in">
                         <div class="cart-header">
-                            <h3>Your Cart Items <?= count($_SESSION['cart']) ?></h3>
+                            <h3>Your Cart Items <?= count($_SESSION['cart'] ?? []) ?></h3>
                         </div>
                         
                         <div class="cart-items">
