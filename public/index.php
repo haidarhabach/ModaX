@@ -2,7 +2,7 @@
 <html>
 <?php
 session_start();
-include '../includes/db.php';
+include 'db.php';
 
 $_SESSION['cart'] = $_SESSION['cart'] ?? [];
  
@@ -884,8 +884,11 @@ foreach ($_SESSION['cart'] as $item) {
             <!-- Product Grid -->
             <div class="row" id="product-grid">
 <?php
-$query = "select p.category_id,p.id,c.id , p.price,p.name,p.price,filename,p.type from products as p,product_images as i,categories as c
-where  p.id = i.product_id AND c.id= p.category_id";
+$query = "SELECT p.id as product_id, p.category_id, p.price, p.name, i.filename, p.type
+        FROM products p 
+        JOIN product_images i ON p.id = i.product_id
+        JOIN categories c ON c.id = p.category_id
+        ";
 
 // -- price --
 if (!empty($_GET['price'])) {
@@ -961,7 +964,7 @@ if(isset($_GET["search"]))
     $search =  "%" .$_GET["search"]. "%" ;
     
 
-    $query = "SELECT p.category_id,p.id,c.id ,p.price, p.name, filename, p.type
+    $query = "SELECT p.id as pid, p.category_id,c.id ,p.price, p.name, filename, p.type
             FROM products AS p 
             JOIN product_images AS i ON p.id = i.product_id
             JOIN categories AS c ON c.id = p.category_id
@@ -994,7 +997,7 @@ while ($row = $result->fetch_assoc()) {
                 <img src="assets/images/<?= $row['filename'] ?>" alt="<?= $row['name'] ?>">
                 <a href="product.php?name=<?= $row['name'] ?>&price=
                 <?= $row['price'] ?>&photo=<?= $row['filename'] ?>&type=<?= $row['type'] ?>
-                &id=<?= $row['id'] ?> &category=<?= $row['category_id'] ?>" class="quick-view-btn">Quick View</a>
+                &id=<?= $row['product_id'] ?>&category=<?= $row['category_id'] ?>" class="quick-view-btn">Quick View</a>
             </div>
             <div class="product-info d-flex justify-content-between align-items-start">
                 <div>
