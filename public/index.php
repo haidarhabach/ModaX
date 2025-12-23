@@ -2,7 +2,7 @@
 <html>
 <?php
 session_start();
-include 'db.php';
+include '../includes/db.php';
 
 $_SESSION['cart'] = $_SESSION['cart'] ?? [];
  
@@ -479,7 +479,10 @@ foreach ($_SESSION['cart'] as $item) {
                         <a href="cart.php" class="header-icon">
                             <i class="fas fa-shopping-cart"></i>
                         </a>
-                        <span class="cart-badge">0</span>
+                                         <span class="cart-badge">
+    <?= $cartCount ?>
+</span>
+
                     </div>
 
                     <a href="#" class="header-icon">
